@@ -21,23 +21,8 @@ import heroBg from "@/assets/landing/image/hero-bg.png";
 
 // ... (existing code)
 
-const heroMessages = [
-  "Built for Salary Earners.",
-  "Perfect for Business Owners.",
-  "Scalable for Companies.",
-  "100% NRS Compliant."
-];
-
 export function HeroSection() {
   const [isGuideOpen, setIsGuideOpen] = useState(false);
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % heroMessages.length);
-    }, 3000);
-    return () => clearInterval(timer);
-  }, []);
 
   return (
     <section className="relative min-h-[110vh] flex flex-col justify-start pt-32 lg:pt-48 overflow-hidden bg-[#022c22]">
@@ -166,18 +151,9 @@ export function HeroSection() {
             className="text-5xl md:text-7xl font-bold text-white tracking-tight leading-[1.1] mb-8 max-w-5xl mx-auto min-h-[3.3em] md:min-h-[2.2em]"
         >
             Nigerian Tax Compliance, <br />
-            <AnimatePresence mode="wait">
-              <motion.span 
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-                className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 animate-gradient-x block"
-              >
-                  {heroMessages[index]}
-              </motion.span>
-            </AnimatePresence>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 animate-gradient-x block">
+                100% NRS Compliant.
+            </span>
         </motion.div>
 
         <motion.p 
