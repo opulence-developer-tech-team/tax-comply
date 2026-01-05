@@ -40,28 +40,30 @@ export function HeroSection() {
       <HeroGuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
       
       {/* 1. Cinematic Background Effects */}
-      <div className="absolute inset-0 z-0">
-        {/* Restored Background Image */}
-        <motion.div
-           animate={{
-            scale: [1, 1.1, 1],
-           }}
-           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-           className="absolute inset-0 opacity-10 mix-blend-overlay"
-        >
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        {/* Restored Background Image - Optimized: Static on mobile, animated on desktop */}
+        <div className="absolute inset-0 opacity-10 mix-blend-overlay">
              <Image
               src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
               alt="Tax compliance documents"
               fill
-              className="object-cover"
+              className="object-cover hidden md:block animate-[pulse_10s_ease-in-out_infinite]"
               priority
             />
-        </motion.div>
+            {/* Mobile-optimized static image */}
+            <Image
+              src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60"
+              alt="Tax compliance documents"
+              fill
+              className="object-cover md:hidden"
+              priority
+            />
+        </div>
 
-        {/* Main Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-emerald-500/20 blur-[120px] rounded-full pointer-events-none" />
+        {/* Main Glow - Reduced blur for mobile */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-emerald-500/20 blur-[60px] md:blur-[120px] rounded-full" />
         
-        {/* Subtle Grid */}
+        {/* Subtle Grid - Static */}
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay" />
         <div 
             className="absolute inset-0 opacity-[0.03]" 
@@ -71,31 +73,23 @@ export function HeroSection() {
             }} 
         />
         
-        {/* Floating Orbs */}
+        {/* Floating Orbs - Disabled on mobile for performance */}
         <motion.div 
             animate={{ y: [0, -20, 0], opacity: [0.3, 0.5, 0.3] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/3 left-10 w-64 h-64 bg-emerald-600/10 rounded-full blur-3xl"
+            className="hidden md:block absolute top-1/3 left-10 w-64 h-64 bg-emerald-600/10 rounded-full blur-3xl will-change-transform"
         />
         <motion.div 
             animate={{ y: [0, 20, 0], opacity: [0.2, 0.4, 0.2] }}
             transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute bottom-1/3 right-10 w-80 h-80 bg-teal-600/10 rounded-full blur-3xl"
+            className="hidden md:block absolute bottom-1/3 right-10 w-80 h-80 bg-teal-600/10 rounded-full blur-3xl will-change-transform"
         />
 
-        {/* Random Floating Elements - Pushed to Background */}
+        {/* Random Floating Elements - Only visible on Large screens and up */}
         {/* Nigerian Flag */}
-        <motion.div
-           animate={{ 
-             y: [0, -15, 0],
-             rotate: [0, 5, 0],
-             scale: [1, 1.05, 1] 
-           }}
-           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-           className="absolute top-[15%] left-[20%] text-4xl blur-[0.5px] opacity-40 select-none z-0 hidden lg:block grayscale-[0.3]"
-        >
+        <div className="absolute top-[15%] left-[20%] text-4xl opacity-40 select-none z-0 hidden lg:block grayscale-[0.3] animate-[bounce_5s_infinite]">
           🇳🇬
-        </motion.div>
+        </div>
 
         {/* WHT Badge */}
          <motion.div
@@ -104,7 +98,7 @@ export function HeroSection() {
              x: [0, -5, 0]
            }}
            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-           className="absolute bottom-[40%] right-[15%] select-none z-0 hidden lg:block opacity-40"
+           className="absolute bottom-[40%] right-[15%] select-none z-0 hidden lg:block opacity-40 will-change-transform"
         >
            <div className="px-3 py-1.5 rounded-full bg-teal-900/30 border border-teal-500/20 text-teal-200/70 text-xs font-bold tracking-wider">
               WHT READY
@@ -112,17 +106,9 @@ export function HeroSection() {
         </motion.div>
 
         {/* Naira Symbol */}
-        <motion.div
-           animate={{ 
-             y: [0, -30, 0],
-             rotate: [0, 15, 0],
-             opacity: [0.2, 0.4, 0.2]
-           }}
-           transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-           className="absolute top-[40%] left-[5%] text-6xl font-serif text-emerald-500/20 select-none z-0 hidden lg:block blur-[1px]"
-        >
+        <div className="absolute top-[40%] left-[5%] text-6xl font-serif text-emerald-500/20 select-none z-0 hidden lg:block blur-[1px] animate-[pulse_4s_ease-in-out_infinite]">
           ₦
-        </motion.div>
+        </div>
 
         {/* CIT Badge */}
         <motion.div
@@ -131,7 +117,7 @@ export function HeroSection() {
              rotate: [0, -3, 0]
            }}
            transition={{ duration: 8.5, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
-           className="absolute top-[32%] left-[12%] select-none z-0 hidden lg:block opacity-40"
+           className="absolute top-[32%] left-[12%] select-none z-0 hidden lg:block opacity-40 will-change-transform"
         >
            <div className="px-3 py-1.5 rounded-full bg-blue-900/30 border border-blue-500/20 text-blue-200/70 text-[10px] font-bold tracking-wider">
               CIT FILED
@@ -145,7 +131,7 @@ export function HeroSection() {
              x: [0, 5, 0]
            }}
            transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
-           className="absolute bottom-[12%] left-[30%] select-none z-0 hidden lg:block opacity-40"
+           className="absolute bottom-[12%] left-[30%] select-none z-0 hidden lg:block opacity-40 will-change-transform"
         >
            <div className="px-3 py-1.5 rounded-full bg-purple-900/30 border border-purple-500/20 text-purple-200/70 text-[10px] font-bold tracking-wider">
               PIT SORTED
