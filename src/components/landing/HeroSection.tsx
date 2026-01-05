@@ -46,7 +46,7 @@ export function HeroSection() {
       {/* 1. Cinematic Background Effects */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Restored Background Image - Optimized: Static on mobile, animated on desktop */}
-        <div className="absolute inset-0 opacity-10 mix-blend-overlay">
+        <div className="absolute inset-0 opacity-10 md:mix-blend-overlay mix-blend-normal">
              <Image
               src={heroBg}
               alt="Tax compliance documents"
@@ -67,7 +67,7 @@ export function HeroSection() {
         </div>
 
         {/* Main Glow - Reduced blur for mobile */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-emerald-500/20 blur-[60px] md:blur-[120px] rounded-full" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-emerald-500/10 blur-[30px] md:bg-emerald-500/20 md:blur-[120px] rounded-full" />
         
         {/* Subtle Grid - Static */}
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay" />
@@ -152,7 +152,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm font-medium mb-8 backdrop-blur-sm"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm font-medium mb-8 md:backdrop-blur-sm"
         >
             <ShieldCheck className="w-4 h-4" />
             <span>Official NRS 2026 Compliant</span>
@@ -208,7 +208,7 @@ export function HeroSection() {
             </Link>
             <button 
                 onClick={() => setIsGuideOpen(true)}
-                className="h-14 px-8 text-lg font-medium text-white/90 hover:text-white border border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full transition-all flex items-center gap-2 backdrop-blur-sm"
+                className="h-14 px-8 text-lg font-medium text-white/90 hover:text-white border border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full transition-all flex items-center gap-2 md:backdrop-blur-sm"
             >
                 <PlayCircle className="w-5 h-5" />
                 How It Works
@@ -220,10 +220,10 @@ export function HeroSection() {
              initial={{ opacity: 0, y: 50, scale: 0.95 }}
              animate={{ opacity: 1, y: 0, scale: 1 }}
              transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-             className="relative mx-auto max-w-5xl"
+             className="relative mx-auto max-w-5xl will-change-transform"
         >
-            {/* Glossy Container */}
-            <div className="relative rounded-2xl border border-white/10 bg-[#0f172a]/40 backdrop-blur-xl shadow-2xl shadow-emerald-900/50 overflow-hidden aspect-[16/10] md:aspect-[2/1] group">
+            {/* Glossy Container - Optimization: Solid bg, no blur/shadow on mobile */}
+            <div className="relative rounded-2xl border border-white/10 bg-[#0f172a]/95 md:bg-[#0f172a]/40 md:backdrop-blur-xl md:shadow-2xl md:shadow-emerald-900/50 overflow-hidden aspect-[16/10] md:aspect-[2/1] group">
                 
                 {/* Fake Browser Header */}
                 <div className="h-10 border-b border-white/5 bg-white/5 flex items-center px-4 gap-2">
@@ -253,7 +253,7 @@ export function HeroSection() {
                         {/* Header Area */}
                         <div className="flex justify-between items-center mb-8">
                             <div className="space-y-2">
-                                <div className="h-6 w-48 bg-white/10 rounded-lg animate-pulse" />
+                                <div className="h-6 w-48 bg-white/10 rounded-lg md:animate-pulse" />
                                 <div className="h-4 w-32 bg-white/5 rounded-lg" />
                             </div>
                             <div className="h-10 w-10 rounded-full bg-emerald-500/20 border border-emerald-500/50" />
@@ -320,8 +320,8 @@ export function HeroSection() {
             </div>
 
             {/* Decor Elements behind dashboard */}
-            <div className="absolute -top-10 -right-10 w-72 h-72 bg-emerald-500/20 rounded-full blur-[80px] -z-10" />
-            <div className="absolute -bottom-10 -left-10 w-72 h-72 bg-teal-500/20 rounded-full blur-[80px] -z-10" />
+            <div className="absolute -top-10 -right-10 w-40 h-40 md:w-72 md:h-72 bg-emerald-500/20 rounded-full blur-[40px] md:blur-[80px] -z-10" />
+            <div className="absolute -bottom-10 -left-10 w-40 h-40 md:w-72 md:h-72 bg-teal-500/20 rounded-full blur-[40px] md:blur-[80px] -z-10" />
             
         </motion.div>
       </div>

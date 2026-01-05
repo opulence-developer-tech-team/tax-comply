@@ -9,14 +9,21 @@ export function EntranceOverlay() {
   const [exitVariant, setExitVariant] = useState<any>({ opacity: 0 });
 
   useEffect(() => {
+    // Check for mobile device (simple width check)
+    const isMobile = window.innerWidth < 768;
+
     // Define possible exit animations
-    const variants = [
-      { x: "-100%", opacity: 0 }, // Slide Left
-      { x: "100%", opacity: 0 },  // Slide Right
-      { y: "-100%", opacity: 0 }, // Slide Top
-      { y: "100%", opacity: 0 },  // Slide Bottom
-      { opacity: 0 },             // Dissolve
-    ];
+    // On mobile, force simple dissolve to prevent layout trashing/lag
+    const variants = isMobile 
+      ? [{ opacity: 0 }] 
+      : [
+          { x: "-100%", opacity: 0 }, // Slide Left
+          { x: "100%", opacity: 0 },  // Slide Right
+          { y: "-100%", opacity: 0 }, // Slide Top
+          { y: "100%", opacity: 0 },  // Slide Bottom
+          { opacity: 0 },             // Dissolve
+        ];
+    
     // Select one randomly
     const randomVariant = variants[Math.floor(Math.random() * variants.length)];
     setExitVariant(randomVariant);
@@ -47,8 +54,8 @@ export function EntranceOverlay() {
             transition={{ duration: 0.8, ease: "easeInOut" }}
             className="fixed inset-0 z-[100] bg-[#022c22] flex flex-col items-center justify-center overflow-hidden"
         >
-          {/* Background Ambient Glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 blur-[100px] rounded-full" />
+          {/* Background Ambient Glow - Reduced blur on mobile */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 blur-[60px] md:blur-[100px] rounded-full" />
 
           <div className="relative z-10 text-center">
             {/* Logo/Icon Animation */}
@@ -58,7 +65,7 @@ export function EntranceOverlay() {
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className="mb-6 flex justify-center"
             >
-                <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center backdrop-blur-sm">
+                <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center md:backdrop-blur-sm">
                     <ShieldCheck className="w-8 h-8 text-emerald-400" />
                 </div>
             </motion.div>
