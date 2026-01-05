@@ -1,0 +1,4 @@
+export { VATContent } from "./VATContent";
+
+
+
