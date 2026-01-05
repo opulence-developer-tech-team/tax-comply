@@ -17,6 +17,10 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { HeroGuideModal } from "./HeroGuideModal";
 
+import heroBg from "@/assets/landing/image/hero-bg.png";
+
+// ... (existing code)
+
 const heroMessages = [
   "Built for Salary Earners.",
   "Perfect for Business Owners.",
@@ -44,19 +48,21 @@ export function HeroSection() {
         {/* Restored Background Image - Optimized: Static on mobile, animated on desktop */}
         <div className="absolute inset-0 opacity-10 mix-blend-overlay">
              <Image
-              src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+              src={heroBg}
               alt="Tax compliance documents"
               fill
               className="object-cover hidden md:block animate-[pulse_10s_ease-in-out_infinite]"
               priority
+              placeholder="blur"
             />
             {/* Mobile-optimized static image */}
             <Image
-              src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60"
+              src={heroBg}
               alt="Tax compliance documents"
               fill
               className="object-cover md:hidden"
               priority
+              placeholder="blur"
             />
         </div>
 
