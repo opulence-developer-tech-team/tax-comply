@@ -376,7 +376,7 @@ class InvoiceController {
       // Note: Editing paid/cancelled invoices is allowed for corrections and data updates
 
       // Ensure companyId matches (security check)
-      if (updateData.companyId && updateData.companyId.toString() !== existingInvoice.companyId.toString()) {
+      if (updateData.companyId && existingInvoice.companyId && updateData.companyId.toString() !== existingInvoice.companyId.toString()) {
         return utils.customResponse({
           status: 400,
           message: MessageResponse.Error,

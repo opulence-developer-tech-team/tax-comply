@@ -55,6 +55,8 @@ import { SUBSCRIPTION_PRICING } from "@/lib/constants/subscription";
 import { HttpMethod } from "@/lib/utils/http-method";
 import { AccountType } from "@/lib/utils/account-type";
 import { ButtonVariant, ButtonSize, LoadingStateSize } from "@/lib/utils/client-enums";
+import { EmptyState } from "@/components/shared/EmptyState";
+
 
 // NRS (Nigeria Revenue Service) WHT Deadline: WHT must be remitted within 21 days of deduction (by 21st of following month)
 const NRS_WHT_DEADLINE_DAY = 21;
@@ -216,6 +218,21 @@ export function WHTContent({ entityId, accountType, currentPlan }: WHTContentPro
       );
     }
 
+    // Check if user has access to WHT tracking feature
+    const hasWhtTrackingFeature = SUBSCRIPTION_PRICING[currentPlan]?.features?.whtTracking;
+    if (!hasWhtTrackingFeature) {
+      // User doesn't have access, don't fetch and ensure summary is null
+      dispatch(whtActions.setWHTSummary({
+        summary: null,
+        filters: {
+          year: selectedYear,
+          month: selectedMonth,
+        },
+        companyId: entityId,
+      }));
+      return;
+    }
+
     fetchWHTReq({
       successRes: (response: any) => {
         const summaryData = response?.data?.data;
@@ -247,8 +264,13 @@ export function WHTContent({ entityId, accountType, currentPlan }: WHTContentPro
             });
             dispatch(whtActions.setError(null));
           } else {
-            // Authorization/permission error - stop retrying
-            dispatch(whtActions.setError(errorData?.description || "Unauthorized: You don't have access to this resource"));
+             // Suppress console error for expected plan limitations
+             // authorize/permission error - stop retrying
+             // check if it is plan limitaion based on message
+             const isPlanLimitation = errorData?.description?.includes("Upgrade");
+             if (!isPlanLimitation) {
+                 dispatch(whtActions.setError(errorData?.description || "Unauthorized: You don't have access to this resource"));
+             }
           }
           return false; // Stop retrying on 403 errors
         } else if (status === 404) {
@@ -296,6 +318,20 @@ export function WHTContent({ entityId, accountType, currentPlan }: WHTContentPro
     }
     if (selectedMonth) params.append("month", selectedMonth.toString());
     if (selectedYear) params.append("year", selectedYear.toString());
+
+    // Check if user has access to WHT tracking feature
+    // const hasWhtTrackingFeature = SUBSCRIPTION_PRICING[currentPlan]?.features?.whtTracking; // Already checked in fetchSummary but good to be safe
+    if (!SUBSCRIPTION_PRICING[currentPlan]?.features?.whtTracking) {
+      dispatch(whtActions.setWHTRecords({
+        records: [],
+         filters: {
+          year: selectedYear,
+          month: selectedMonth,
+        },
+        companyId: entityId,
+      }));
+      return;
+    }
 
     console.log("[WHT Content] Fetching WHT records:", {
       entityId,
@@ -388,18 +424,16 @@ export function WHTContent({ entityId, accountType, currentPlan }: WHTContentPro
             dispatch(whtActions.setError(null));
           } else {
             // Authorization/permission error - stop retrying
-            const errorMessage = errorData?.description || errorData?.message || errorData?.error || "Unauthorized: You don't have access to this resource";
-            console.error("[WHT Content] ❌ Authorization error (403):", errorMessage);
-            dispatch(whtActions.setError(errorMessage));
+            // Silent fail for 403 to avoid console spam
+             dispatch(whtActions.setWHTRecords({
+                records: [],
+                filters: {
+                  year: selectedYear,
+                  month: selectedMonth,
+                },
+                companyId: entityId,
+              }));
           }
-          dispatch(whtActions.setWHTRecords({
-            records: [],
-            filters: {
-              year: selectedYear,
-              month: selectedMonth,
-            },
-            companyId: entityId,
-          }));
           return false; // Stop retrying on 403 errors
         } else if (status === 404) {
           console.log("[WHT Content] ℹ️ No WHT records found (404) - this is valid");
@@ -459,6 +493,18 @@ export function WHTContent({ entityId, accountType, currentPlan }: WHTContentPro
       );
     }
     if (selectedYear) params.append("year", selectedYear.toString());
+
+    // Check if user has access to WHT remittance feature
+    // Note: WHT Remittance is part of WHT Tracking feature
+    const hasWhtRemittanceFeature = SUBSCRIPTION_PRICING[currentPlan]?.features?.whtTracking;
+    if (!hasWhtRemittanceFeature) {
+      // User doesn't have access, don't fetch and ensure list is empty
+      dispatch(whtActions.setWHTRemittances({
+        remittances: [],
+        companyId: entityId,
+      }));
+      return;
+    }
 
     fetchWHTReq({
       successRes: (response: any) => {
@@ -1125,6 +1171,24 @@ export function WHTContent({ entityId, accountType, currentPlan }: WHTContentPro
         />
         
         <UpgradePromptComponent />
+
+
+        {/* Empty State */}
+        {!isLoading && records.length === 0 && !error && (
+            <div className="py-12">
+               <EmptyState
+                title="No WHT Records Found"
+                description={
+                  selectedMonth 
+                    ? `No withholding tax records found for ${new Date(2000, selectedMonth - 1).toLocaleString("default", { month: "long" })} ${selectedYear}.`
+                    : `No withholding tax records found for ${selectedYear}.`
+                }
+                icon="📉"
+                actionLabel="Explain WHT to me"
+                onAction={() => setIsGuideOpen(true)}
+              />
+            </div>
+        )}
       </motion.div>
     </div>
   );

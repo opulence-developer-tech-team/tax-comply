@@ -84,31 +84,32 @@ export function TaxFilingContent({ accountId: accountIdProp, entityId: entityIdP
     year: number,
     month?: number
   ) => {
+    
     // CRITICAL: Validate inputs - fail loudly if invalid
     if (isNaN(year) || !isFinite(year) || year < 2026 || year > 2100) {
       throw new Error(`Invalid year ${year}. Must be >= 2026.`);
     }
+    
 
     if (month !== undefined && month !== null) {
       if (isNaN(month) || !isFinite(month) || month < 1 || month > 12) {
         throw new Error(`Invalid month ${month}. Must be 1-12.`);
       }
     }
+    
 
     if (generatingDoc) return; // Prevent duplicates
 
     // Check upgrade
+    // Check upgrade
     if (!hasExportAccess) {
-      showUpgradePrompt({
-        feature: "Tax Documents",
-        currentPlan: currentPlan.toLowerCase(),
-        requiredPlan: "starter",
-        requiredPlanPrice: SUBSCRIPTION_PRICING[SubscriptionPlan.Starter].monthly,
-        message: "You need the Starter plan to download official tax documents.",
-        reason: UpgradeReason.PlanLimitation,
+      toast.info("Free Plan Limitation", {
+        description: "Your document will include a 'taxcomply.ng' watermark. Upgrade to the Starter plan for official, unbranded documents.",
+        duration: 5000,
       });
-      return;
+      // We don't return here anymore, we let it proceed to download the watermarked version
     }
+    
 
     const docKey = `${documentType}-${year}-${month || "yearly"}`;
     setGeneratingDoc(docKey);
@@ -218,11 +219,11 @@ export function TaxFilingContent({ accountId: accountIdProp, entityId: entityIdP
           </p>
         </div>
 
-        <div className="flex gap-3 w-full md:w-auto">
+        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
              <Button
                 variant={ButtonVariant.Outline}
                 onClick={() => setIsGuideOpen(true)}
-                className="flex-1 md:flex-none justify-center border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                className="w-full sm:w-auto justify-center border-emerald-200 text-emerald-700 hover:bg-emerald-50 whitespace-nowrap"
             >
                 Start Here: How to File?
             </Button>
@@ -231,7 +232,7 @@ export function TaxFilingContent({ accountId: accountIdProp, entityId: entityIdP
               <Button
                   variant={ButtonVariant.Outline}
                   onClick={() => router.push(getComplianceRoute())}
-                  className="flex-1 md:flex-none justify-center"
+                  className="w-full sm:w-auto justify-center whitespace-nowrap"
               >
                   <CheckCircle2 className="w-4 h-4 mr-2" />
                   Check Status

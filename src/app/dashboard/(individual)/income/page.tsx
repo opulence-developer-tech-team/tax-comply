@@ -613,10 +613,9 @@ export default function IncomePage() {
           actionLabel="Go to Expenses"
         />
 
-        {/* Guide Modal */}
         <IncomeGuideModal 
             isOpen={showGuideModal} 
-            onClose={() => setShowGuideModal(false)} 
+            onClose={() => setShowGuideModal(false)}
         />
       </motion.div>
     </RouteGuard>

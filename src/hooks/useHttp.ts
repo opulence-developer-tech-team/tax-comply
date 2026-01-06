@@ -137,11 +137,10 @@ export const useHttp = () => {
           errorDescription.toLowerCase().includes("only available for") ||
           errorDescription.toLowerCase().includes("this feature is only available");
         
-        // Handle automatic logout for 401/403 errors (except on auth endpoints and account type mismatches)
+        // Handle automatic logout for 401 errors (except on auth endpoints)
         // 401 = Authentication error (invalid/missing token) - always trigger logout
-        // 403 = Could be auth error OR authorization error (account type mismatch)
-        // For 403, only trigger logout if it's NOT an account type mismatch
-        const shouldLogout = status === 401 || (status === 403 && !isAccountTypeMismatch);
+        // 403 = Forbidden (Authenticated but not authorized) - DO NOT trigger logout
+        const shouldLogout = status === 401;
         
         if (status && shouldLogout && !isAuthEndpoint) {
           // Don't show error toast for automatic logout

@@ -31,6 +31,7 @@ import { toast } from "sonner";
 import { FullScreenModal } from "@/components/ui/FullScreenModal";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { ConfirmModalVariant } from "@/lib/utils/client-enums";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 interface CITRemittance {
   _id: string;
@@ -398,26 +399,15 @@ export function CITRemittanceTracker({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
-              <div className="p-12 text-center">
-                <Receipt className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No payments recorded</p>
-                <p className="text-sm text-gray-500 mt-1">
-                  Record payments you have made to the NRS
-                </p>
-                {hasCITRemittance && (
-                  <Button
-                    onClick={handleAddRemittance}
-                    variant={ButtonVariant.Primary}
-                    size={ButtonSize.Sm}
-                    className="mt-4"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Record First Payment
-                  </Button>
-                )}
-              </div>
-            </Card>
+            <div className="py-6">
+              <EmptyState
+                title="No Payments Recorded"
+                description={`No tax payments recorded for tax year ${taxYear}.`}
+                icon="🧾"
+                actionLabel={hasCITRemittance ? "Record First Payment" : undefined}
+                onAction={hasCITRemittance ? handleAddRemittance : undefined}
+              />
+            </div>
           </motion.div>
         )}
       </div>

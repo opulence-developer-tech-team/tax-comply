@@ -23,6 +23,7 @@ import { StateSelect } from "@/components/ui/StateSelect";
 import { isValidNigerianState } from "@/lib/constants/nigeria";
 import { ButtonVariant, LoadingStateSize } from "@/lib/utils/client-enums";
 import { CURRENT_PRIVACY_POLICY_VERSION, needsPrivacyReconsent } from "@/lib/constants/privacy";
+import { PrivacyConsentSection } from "@/components/shared/PrivacyConsentSection";
 import { HttpMethod } from "@/lib/utils/http-method";
 import {
   isValidTIN,
@@ -947,62 +948,18 @@ export default function CompanyPage() {
                 
                 return shouldShow;
               })() && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.55 }}
-                className="bg-blue-50 border-2 border-blue-200 rounded-xl p-5"
-              >
-                <div className="flex items-start space-x-3">
-                  <Shield className="w-5 h-5 text-blue-700 mt-0.5 shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-blue-900 mb-2">
-                      Data Privacy & Security
-                    </p>
-                    <div className="space-y-3">
-                      <p className="text-sm text-blue-800">
-                        Your company information is collected for tax compliance purposes in accordance with NRS (Nigeria Revenue Service) requirements. 
-                        We use this data to calculate tax obligations, generate invoices formatted per NRS (Nigeria Revenue Service) requirements, and help you 
-                        manage your tax compliance.
-                      </p>
-                      <div className="flex items-start space-x-2">
-                        <input
-                          type="checkbox"
-                          id="data-consent"
-                          required
-                          checked={values.privacyConsentGiven ?? false}
-                          onChange={(e) => {
-                            setValue("privacyConsentGiven", e.target.checked);
-                            if (e.target.checked) {
-                              // Set privacy policy version when consent is given
-                              setValue("privacyPolicyVersion", CURRENT_PRIVACY_POLICY_VERSION);
-                            } else {
-                              setValue("privacyPolicyVersion", "");
-                            }
-                          }}
-                          className="mt-1 w-4 h-4 text-emerald-600 border-blue-300 rounded focus:ring-emerald-500 focus:ring-2"
-                        />
-                        <label htmlFor="data-consent" className="text-sm text-blue-800">
-                          I understand that my company information (TIN, CAC, turnover, etc.) will be used for tax compliance 
-                          purposes and agree to the{" "}
-                          <Link 
-                            href="/privacy-policy" 
-                            target="_blank"
-                            className="text-emerald-600 hover:text-emerald-700 font-medium underline inline-flex items-center gap-1"
-                          >
-                            Privacy Policy
-                            <ExternalLink className="w-3 h-3" />
-                          </Link>
-                        </label>
-                      </div>
-                      <p className="text-xs text-blue-700 italic">
-                        Your data is encrypted and secured. We never share your information with third parties except as 
-                        required by law or for tax compliance purposes.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+              <PrivacyConsentSection
+                checked={values.privacyConsentGiven ?? false}
+                onCheckedChange={(checked) => {
+                  setValue("privacyConsentGiven", checked);
+                  if (checked) {
+                    setValue("privacyPolicyVersion", CURRENT_PRIVACY_POLICY_VERSION);
+                  } else {
+                    setValue("privacyPolicyVersion", "");
+                  }
+                }}
+                entityType="company"
+              />
               )}
 
               <motion.div

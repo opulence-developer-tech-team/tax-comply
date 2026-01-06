@@ -255,13 +255,6 @@ export async function performLogout(options: LogoutOptions): Promise<void> {
   try {
     // Step 1: Clear all Redux state slices (synchronous)
     dispatch(resetAllState());
-    
-    // Clear user or admin state based on logout type (synchronous)
-    if (isAdmin) {
-      dispatch(adminActions.clearAdmin());
-    } else {
-      dispatch(userActions.clearUser());
-    }
 
     // Step 2: Clear Redux persisted state (async, but we don't wait)
     // This runs in background - manual localStorage clearing below ensures cleanup

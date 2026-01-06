@@ -68,19 +68,29 @@ async function handler(
         );
       }
 
+      // Resolve entity ID
+      const entityId = invoice.companyId || invoice.businessId;
+      if (!entityId) {
+         logger.error(`Invoice found without entity ID: ${invoice._id}`);
+         return NextResponse.json(
+          { message: MessageResponse.Error, description: "Invoice data integrity error", data: null },
+          { status: 500 }
+        );
+      }
+
       // SECURITY: Verify user is the owner of the entity that owns this invoice
       let isOwner = false;
       if (accountType === AccountType.Company) {
-        isOwner = await requireOwner(auth.context.userId, invoice.companyId);
+        isOwner = await requireOwner(auth.context.userId, entityId);
       } else if (accountType === AccountType.Business) {
-        isOwner = await requireBusinessOwner(auth.context.userId, invoice.companyId);
+        isOwner = await requireBusinessOwner(auth.context.userId, entityId);
       }
       
       if (!isOwner) {
         logger.warn("Unauthorized invoice access attempt", {
           userId: auth.context.userId.toString(),
           invoiceId: invoiceId.toString(),
-          invoiceCompanyId: invoice.companyId.toString(),
+          entityId: entityId.toString(),
           accountType,
         });
         return NextResponse.json(
@@ -121,19 +131,28 @@ async function handler(
         );
       }
 
+      // Resolve entity ID
+      const entityId = invoice.companyId || invoice.businessId;
+      if (!entityId) {
+         return NextResponse.json(
+          { message: MessageResponse.Error, description: "Invoice data integrity error", data: null },
+          { status: 500 }
+        );
+      }
+
       // SECURITY: Verify user is the owner of the entity that owns this invoice
       let isOwner = false;
       if (accountType === AccountType.Company) {
-        isOwner = await requireOwner(auth.context.userId, invoice.companyId);
+        isOwner = await requireOwner(auth.context.userId, entityId);
       } else if (accountType === AccountType.Business) {
-        isOwner = await requireBusinessOwner(auth.context.userId, invoice.companyId);
+        isOwner = await requireBusinessOwner(auth.context.userId, entityId);
       }
       
       if (!isOwner) {
         logger.warn("Unauthorized invoice update attempt", {
           userId: auth.context.userId.toString(),
           invoiceId: invoiceId.toString(),
-          invoiceCompanyId: invoice.companyId.toString(),
+          entityId: entityId.toString(),
           accountType,
         });
         return NextResponse.json(

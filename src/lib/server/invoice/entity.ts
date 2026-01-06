@@ -34,7 +34,12 @@ const invoiceSchema = new Schema<IInvoice>(
     companyId: {
       type: Schema.Types.ObjectId,
       ref: "Company",
-      required: true,
+      required: false, // Changed from true to false, but we validate below
+    },
+    businessId: {
+      type: Schema.Types.ObjectId,
+      ref: "Business",
+      required: false,
     },
     invoiceNumber: {
       type: String,
@@ -159,13 +164,28 @@ const invoiceSchema = new Schema<IInvoice>(
   }
 );
 
+// Custom validator to ensure either companyId or businessId is present
+invoiceSchema.pre("validate", function (this: any, next: any) {
+  if (!this.companyId && !this.businessId) {
+    next(new Error("Invoice must belong to either a Company or a Business"));
+  } else {
+    next();
+  }
+});
+
 invoiceSchema.set("versionKey", false);
 invoiceSchema.set("toJSON", { virtuals: true });
 invoiceSchema.set("toObject", { virtuals: true });
 
-invoiceSchema.index({ companyId: 1, invoiceNumber: 1 }, { unique: true });
+// Indexes for company
+invoiceSchema.index({ companyId: 1, invoiceNumber: 1 }, { unique: true, partialFilterExpression: { companyId: { $exists: true } } });
 invoiceSchema.index({ companyId: 1, issueDate: -1 });
 invoiceSchema.index({ companyId: 1, status: 1 });
+
+// Indexes for business
+invoiceSchema.index({ businessId: 1, invoiceNumber: 1 }, { unique: true, partialFilterExpression: { businessId: { $exists: true } } });
+invoiceSchema.index({ businessId: 1, issueDate: -1 });
+invoiceSchema.index({ businessId: 1, status: 1 });
 invoiceSchema.index({ customerEmail: 1 });
 
 const Invoice =
@@ -173,4 +193,3 @@ const Invoice =
   mongoose.model<IInvoice>("Invoice", invoiceSchema);
 
 export default Invoice;
-

@@ -40,20 +40,20 @@ export function PITHeader({
   return (
     <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-start justify-between gap-6">
       <div className="flex-1">
-        <div className="flex items-start space-x-4">
-          <div className="bg-emerald-100 p-3 rounded-2xl shrink-0 mt-1">
+        <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+          <div className="bg-emerald-100 p-3 rounded-2xl shrink-0 sm:mt-1">
             <Calculator className="w-8 h-8 text-emerald-700" aria-hidden="true" />
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2 md:gap-3">
-              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Personal Income Tax</h1>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Personal Income Tax</h1>
               {currentYear && (
                 <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-bold border border-emerald-200 shadow-sm shrink-0">
                   {currentYear}
                 </span>
               )}
             </div>
-            <p className="text-lg text-slate-600 mt-1 font-medium leading-normal">
+            <p className="text-base sm:text-lg text-slate-600 mt-1 font-medium leading-normal">
               Your personal tax snapshot.
             </p>
             
@@ -65,7 +65,7 @@ export function PITHeader({
               >
                 <div className="flex items-center gap-2">
                   <HelpCircle className="w-5 h-5" />
-                  <span className="text-base font-semibold underline decoration-dashed underline-offset-4 group-hover:decoration-solid">
+                  <span className="text-sm sm:text-base font-semibold underline decoration-dashed underline-offset-4 group-hover:decoration-solid">
                     Explain Tax to Me
                   </span>
                 </div>

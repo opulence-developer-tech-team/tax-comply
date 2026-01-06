@@ -92,6 +92,32 @@ function getMonthName(month: number): string {
   return months[month - 1] || "";
 }
 
+
+/**
+ * Adds a watermark to the PDF page
+ */
+function addWatermark(doc: jsPDF, pageWidth: number, pageHeight: number, text: string = "taxcomply.ng"): void {
+  doc.saveGraphicsState();
+  doc.setGState(new (doc as any).GState({ opacity: 0.1 }));
+  doc.setFontSize(60);
+  doc.setTextColor(150, 150, 150);
+  doc.setFont("helvetica", "bold");
+  
+  // Rotate text 45 degrees around center
+  const angle = 45;
+  const rads = angle * (Math.PI / 180);
+  const cx = pageWidth / 2;
+  const cy = pageHeight / 2;
+  
+  doc.text(text, cx, cy, { 
+    align: "center", 
+    baseline: "middle", 
+    angle: 45 
+  });
+  
+  doc.restoreGraphicsState();
+}
+
 /**
  * Adds standard disclaimer footer to all tax filing documents
  */
@@ -232,7 +258,8 @@ export async function generateVATReturnPDF(
   entityId: Types.ObjectId,
   month: number,
   year: number,
-  accountType: AccountType
+  accountType: AccountType,
+  isWatermarked: boolean = false
 ): Promise<Buffer> {
   // CRITICAL: Validate accountType
   if (!accountType || (accountType !== AccountType.Company && accountType !== AccountType.Business)) {
@@ -468,6 +495,15 @@ export async function generateVATReturnPDF(
   // Add disclaimer footer
   addDisclaimerFooter(doc, pageWidth, pageHeight);
 
+  // Add watermark if required
+  if (isWatermarked) {
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        addWatermark(doc, pageWidth, pageHeight, "taxcomply.ng");
+    }
+  }
+
   const pdfOutput = doc.output("arraybuffer");
   return Buffer.from(pdfOutput);
 }
@@ -478,7 +514,8 @@ export async function generateVATReturnPDF(
 export async function generateYearlyVATReturnPDF(
   entityId: Types.ObjectId,
   year: number,
-  accountType: AccountType
+  accountType: AccountType,
+  isWatermarked: boolean = false
 ): Promise<Buffer> {
   // CRITICAL: Validate accountType
   if (!accountType || (accountType !== AccountType.Company && accountType !== AccountType.Business)) {
@@ -696,6 +733,15 @@ export async function generateYearlyVATReturnPDF(
   // Add disclaimer footer
   addDisclaimerFooter(doc, pageWidth, pageHeight);
 
+  // Add watermark if required
+  if (isWatermarked) {
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        addWatermark(doc, pageWidth, pageHeight, "taxcomply.ng");
+    }
+  }
+
   const pdfOutput = doc.output("arraybuffer");
   return Buffer.from(pdfOutput);
 }
@@ -712,7 +758,8 @@ export async function generatePAYERemittancePDF(
   entityId: Types.ObjectId,
   month: number,
   year: number,
-  accountType: AccountType
+  accountType: AccountType,
+  isWatermarked: boolean = false
 ): Promise<Buffer> {
   // CRITICAL: Validate accountType
   if (!accountType || (accountType !== AccountType.Company && accountType !== AccountType.Business)) {
@@ -966,6 +1013,15 @@ export async function generatePAYERemittancePDF(
   // Add disclaimer footer
   addDisclaimerFooter(doc, pageWidth, pageHeight);
 
+  // Add watermark if required
+  if (isWatermarked) {
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        addWatermark(doc, pageWidth, pageHeight, "taxcomply.ng");
+    }
+  }
+
   const pdfOutput = doc.output("arraybuffer");
   return Buffer.from(pdfOutput);
 }
@@ -979,7 +1035,8 @@ export async function generatePAYERemittancePDF(
  */
 export async function generateCITReturnPDF(
   companyId: Types.ObjectId,
-  year: number
+  year: number,
+  isWatermarked: boolean = false
 ): Promise<Buffer> {
   const company = await Company.findById(companyId);
   if (!company) {
@@ -1227,23 +1284,36 @@ export async function generateCITReturnPDF(
       );
     }
 
-    // CIT rates per NRS (Nigeria Revenue Service) regulations
-    // CRITICAL: Use enum values as keys to ensure exact match
+    // Determine Exemption Status based on Turnover and Year
+    // CRITICAL: Decouple Tax Classification (Structural) from Tax Exemption (Fiscal)
+    const { isCITExempt } = await import("../tax/calculator");
+    const isExempt = isCITExempt(annualTurnover, year);
+
+    // Determine Rate
+    // If exempt -> 0%
+    // If not exempt -> Standard Rate (30%)
+    const standardRate = NRS_CIT_RATE / 100;
+    const citRate = isExempt ? 0 : standardRate;
+
+    // Legacy mapping for logging/debugging (optional, but keep variable for consistency)
     const CIT_RATES: Record<TaxClassification, number> = {
-      [TaxClassification.SmallCompany]: 0, // Exempt
-      [TaxClassification.Medium]: NRS_CIT_RATE / 100, // 30% (Standard Rate)
-      [TaxClassification.Large]: NRS_CIT_RATE / 100, // 30%
+      [TaxClassification.SmallCompany]: 0, 
+      [TaxClassification.Medium]: isExempt ? 0 : standardRate, 
+      [TaxClassification.Large]: standardRate, 
     };
 
-    // CRITICAL: Get citRate from mapping - fail loudly if not found (no fallback)
-    const citRate = CIT_RATES[normalizedTaxClassification];
+    // Verify consistency (optional)
+    const legacyRate = CIT_RATES[normalizedTaxClassification];
+    if (Math.abs(legacyRate - citRate) > 0.001) {
+       console.warn("[generateCITReturnPDF] Discrepancy between calculated CIT rate and legacy table lookup", { calculated: citRate, legacy: legacyRate });
+    }
+    
+    // Proceed with calculated citRate
     
     if (citRate === undefined || citRate === null) {
       throw new Error(
-        `CRITICAL: CIT rate not found for tax classification in PDF generation: ${normalizedTaxClassification}. ` +
-        `Available classifications: ${Object.keys(CIT_RATES).join(", ")}. ` +
-        `Company ID: ${companyId.toString()}, Tax Year: ${year}. ` +
-        `This indicates a code error - all TaxClassification enum values must have corresponding rates.`
+        `CRITICAL: CIT rate invalid in PDF generation fallback. ` +
+        `Company ID: ${companyId.toString()}, Tax Year: ${year}.`
       );
     }
     
@@ -1607,6 +1677,15 @@ export async function generateCITReturnPDF(
   }
   addDisclaimerFooter(doc, pageWidth, pageHeight);
 
+  // Add watermark if required
+  if (isWatermarked) {
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        addWatermark(doc, pageWidth, pageHeight, "taxcomply.ng");
+    }
+  }
+
   const pdfOutput = doc.output("arraybuffer");
   return Buffer.from(pdfOutput);
 }
@@ -1624,7 +1703,8 @@ export async function generateWHTRemittancePDF(
   entityId: Types.ObjectId,
   month: number,
   year: number,
-  accountType: AccountType
+  accountType: AccountType,
+  isWatermarked: boolean = false
 ): Promise<Buffer> {
   let company: any = null;
 
@@ -1916,7 +1996,8 @@ export async function generateWHTRemittancePDF(
  */
 export async function generatePITReturnPDF(
   accountId: Types.ObjectId,
-  taxYear: number
+  taxYear: number,
+  isWatermarked: boolean = false
 ): Promise<Buffer> {
   // Get user information
   const { default: User } = await import("../user/entity");
@@ -2389,6 +2470,15 @@ export async function generatePITReturnPDF(
     doc.addPage();
   }
   addDisclaimerFooter(doc, pageWidth, pageHeight);
+
+  // Add watermark if required
+  if (isWatermarked) {
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        addWatermark(doc, pageWidth, pageHeight, "taxcomply.ng");
+    }
+  }
 
   const pdfOutput = doc.output("arraybuffer");
   return Buffer.from(pdfOutput);

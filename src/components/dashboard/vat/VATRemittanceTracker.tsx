@@ -470,7 +470,7 @@ export function VATRemittanceTracker({
             transition={{ duration: 0.5 }}
           >
             <Card>
-              <div className="p-12 text-center">
+              <div className="p-0 md:p-12 text-center">
                 <Receipt className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600">No payments recorded</p>
                 <p className="text-sm text-gray-500 mt-1">

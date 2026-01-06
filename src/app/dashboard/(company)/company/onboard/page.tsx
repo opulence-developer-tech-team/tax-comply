@@ -31,6 +31,7 @@ import { companyActions } from "@/store/redux/company/company-slice";
 import { ButtonVariant } from "@/lib/utils/client-enums";
 import { UsagePeriod } from "@/lib/utils/usage-period";
 import { Building2, ArrowRight, X, RefreshCw, CheckCircle2 } from "lucide-react";
+import { PrivacyConsentCheckbox } from "@/components/shared/PrivacyConsentCheckbox";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -147,6 +148,14 @@ export default function CompanyOnboardPage() {
             if (!isValidNigerianState(value.trim())) {
               return "Please select a valid Nigerian state from the list";
             }
+          }
+          return null;
+        },
+      },
+      privacyConsentGiven: {
+        custom: (value) => {
+          if (value !== true) {
+            return "You must agree to the Privacy Policy to continue.";
           }
           return null;
         },
@@ -387,7 +396,7 @@ export default function CompanyOnboardPage() {
       isCACRegistered: true, // Always true for Companies (Required for CIT)
       // Include privacy consent data for legal compliance
       privacyConsentGiven: values.privacyConsentGiven ?? false,
-      privacyPolicyVersion: values.privacyConsentGiven ? (values.privacyPolicyVersion ?? CURRENT_PRIVACY_POLICY_VERSION) : undefined,
+      privacyPolicyVersion: values.privacyConsentGiven ? (values.privacyPolicyVersion || CURRENT_PRIVACY_POLICY_VERSION) : undefined,
     };
 
     // DEBUG: Log what's being sent to backend
@@ -744,28 +753,13 @@ export default function CompanyOnboardPage() {
             </motion.div>
 
             {/* Privacy Policy Consent */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              className="border-t border-slate-200 pt-6 mt-6"
-            >
-              <div className="flex items-start">
-                <input
-                  type="checkbox"
-                  id="privacyConsentGiven"
-                  checked={values.privacyConsentGiven || false}
-                  onChange={(e) => setValue("privacyConsentGiven", e.target.checked)}
-                  className="mt-1 w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 focus:ring-2"
-                />
-                <label htmlFor="privacyConsentGiven" className="ml-3 text-sm text-slate-600">
-                  I agree to the <Link href="/privacy-policy" className="text-emerald-600 hover:text-emerald-700 font-medium">Privacy Policy</Link> and consent to the processing of my company's data for tax purposes.
-                  {touched.privacyConsentGiven && errors.privacyConsentGiven && (
-                    <p className="text-red-500 mt-1">{errors.privacyConsentGiven}</p>
-                  )}
-                </label>
-              </div>
-            </motion.div>
+              <PrivacyConsentCheckbox
+                checked={values.privacyConsentGiven}
+                onChange={(checked) => setValue("privacyConsentGiven", checked)}
+                error={errors.privacyConsentGiven}
+                touched={touched.privacyConsentGiven}
+                entityType="company"
+              />
 
             <motion.div
               variants={itemVariants}

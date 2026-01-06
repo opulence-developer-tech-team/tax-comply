@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { NRS_CIT_SMALL_COMPANY_THRESHOLD_2026, NRS_VAT_TURNOVER_THRESHOLD_2026 } from "../../constants/nrs-constants";
+import { NRS_VAT_TURNOVER_THRESHOLD_2026 } from "../../constants/nrs-constants";
 import Business from "./entity";
 import Invoice from "../invoice/entity";
 import { IBusiness, IBusinessOnboarding } from "./interface";
@@ -31,32 +31,16 @@ class BusinessService {
       return TaxClassification.SmallCompany;
     }
 
-    const year = taxYear || new Date().getFullYear();
-    
-    if (year >= 2026) {
-      // CRITICAL UPDATE: Strictly align with Finance Act / Tax Act 2025 for TAX purposes.
-      // Small Company (CIT Exempt): Turnover <= 50M.
-      // Medium Company (CIT 30%): Turnover > 50M but <= 500M.
-      // Large Company (CIT 30%): Turnover > 500M.
-      // Note: VAT Registration threshold is different (25M).
-      
-      // 2026 compliant logic using centralized constants
-      if (turnover <= NRS_CIT_SMALL_COMPANY_THRESHOLD_2026) {
-        return TaxClassification.SmallCompany;
-      } else if (turnover <= 500_000_000) {
-        return TaxClassification.Medium;
-      } else {
-        return TaxClassification.Large;
-      }
+    // Unified structural classification (does not change by year)
+    // Small: <= 25M
+    // Medium: > 25M and <= 100M
+    // Large: > 100M
+    if (turnover <= 25_000_000) {
+      return TaxClassification.SmallCompany;
+    } else if (turnover <= 100_000_000) {
+      return TaxClassification.Medium;
     } else {
-      // Legacy thresholds (Pre-2026/Act 2025)
-      if (turnover < 25_000_000) {
-        return TaxClassification.SmallCompany;
-      } else if (turnover < 100_000_000) {
-        return TaxClassification.Medium;
-      } else {
-        return TaxClassification.Large;
-      }
+      return TaxClassification.Large;
     }
   }
 
@@ -74,7 +58,11 @@ class BusinessService {
     const result = await Invoice.aggregate([
       {
         $match: {
-          companyId: businessId, // Invoice uses 'companyId' field for business link
+          // CRITICAL: Support both businessId (new) and companyId (legacy)
+          $or: [
+            { businessId: businessId },
+            { companyId: businessId }
+          ],
           status: { $in: [InvoiceStatus.Paid, InvoiceStatus.Pending] }, // Accrual Basis: Paid + Accounts Receivable
           issueDate: { $gte: startOfYear, $lte: endOfYear } // Use Issue Date for revenue recognition
         }
@@ -111,7 +99,11 @@ class BusinessService {
     const result = await Invoice.aggregate([
       {
         $match: {
-          companyId: businessId,
+          // CRITICAL: Support both businessId (new) and companyId (legacy)
+          $or: [
+            { businessId: businessId },
+            { companyId: businessId }
+          ],
           status: InvoiceStatus.Paid, // CASH BASIS: Only Paid invoices count for liability
           issueDate: { $gte: startOfYear, $lte: endOfYear }
         }

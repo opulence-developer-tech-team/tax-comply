@@ -142,7 +142,7 @@ export function ConfirmModal({
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
               className={cn(
-                "bg-white rounded-2xl shadow-2xl border-2 w-full pointer-events-auto max-w-md max-h-[90vh] flex flex-col",
+                "bg-white rounded-2xl shadow-2xl border-2 w-full pointer-events-auto max-w-lg max-h-[90vh] flex flex-col",
                 styles.borderColor
               )}
               onClick={(e) => e.stopPropagation()}
@@ -192,12 +192,12 @@ export function ConfirmModal({
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center justify-end space-x-3 pt-4 mt-4 border-t border-slate-100 shrink-0">
+                <div className="flex flex-col-reverse sm:flex-row items-center sm:justify-end gap-3 sm:space-x-3 pt-4 mt-4 border-t border-slate-100 shrink-0">
                   <Button
                     variant={ButtonVariant.Outline}
                     onClick={handleCancel}
                     disabled={isLoading}
-                    className="min-w-[100px] border-slate-200 text-slate-700 hover:bg-slate-50"
+                    className="w-full sm:w-auto min-w-[100px] border-slate-200 text-slate-700 hover:bg-slate-50 order-1 sm:order-none"
                   >
                     {cancelLabel}
                   </Button>
@@ -206,7 +206,12 @@ export function ConfirmModal({
                     onClick={handleConfirm}
                     loading={isLoading}
                     disabled={isLoading}
-                    className={variant === ConfirmModalVariant.Logout ? "min-w-[100px] bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 border-0 text-white shadow-lg" : "min-w-[100px]"}
+                    className={cn(
+                      "w-full sm:w-auto min-w-[100px] order-2 sm:order-none",
+                      variant === ConfirmModalVariant.Logout 
+                        ? "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 border-0 text-white shadow-lg" 
+                        : ""
+                    )}
                   >
                     {confirmLabel}
                   </Button>

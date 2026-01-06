@@ -28,12 +28,12 @@ export function PITIncomeSources({ incomeSources, selectedYear, totalBusinessInc
   return (
     <div>
       <Card 
-        className="p-6"
+        className="p-0 md:p-6"
         disableAnimation={false}
       >
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 sm:gap-0">
            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
                  <Wallet className="w-5 h-5 text-emerald-600" />
               </div>
               <div>
@@ -43,15 +43,15 @@ export function PITIncomeSources({ incomeSources, selectedYear, totalBusinessInc
            </div>
 
            {isBusiness && (
-             <Link href="/dashboard/business/invoices">
+             <Link href="/dashboard/business/invoices" className="w-full sm:w-auto">
               <Button
                 size={ButtonSize.Sm}
                 variant={ButtonVariant.Outline}
-                className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 text-base py-2 px-4"
-                aria-label="Manage your income sources"
+                className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 text-base py-2 px-4 w-full sm:w-auto"
+                aria-label="Manage your invoices"
               >
                 <Plus className="w-4 h-4 mr-2" aria-hidden="true" />
-                Manage Sources
+                Manage Invoices
               </Button>
             </Link>
            )}
@@ -62,16 +62,18 @@ export function PITIncomeSources({ incomeSources, selectedYear, totalBusinessInc
             <Wallet className="w-12 h-12 mx-auto mb-4 text-slate-300" aria-hidden="true" />
             <h4 className="text-lg font-bold text-slate-900 mb-2">No Income Recorded Yet</h4>
             <p className="text-base text-slate-600 max-w-md mx-auto mb-6">
-              Add your income sources so we can calculate your tax.
+              {isBusiness 
+                ? "Create invoices to track your business revenue automatically."
+                : "Add your income sources so we can calculate your tax."}
             </p>
-            <Link href="/dashboard/income">
+            <Link href={isBusiness ? "/dashboard/business/invoices" : "/dashboard/income"}>
               <Button
                 size={ButtonSize.Md}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white border-0 text-base py-3 px-6"
-                aria-label="Add your first income source"
+                aria-label={isBusiness ? "Create your first invoice" : "Add your first income source"}
               >
                 <Plus className="w-5 h-5 mr-2" aria-hidden="true" />
-                Add Your First Income
+                {isBusiness ? "Create First Invoice" : "Add Your First Income"}
               </Button>
             </Link>
           </div>
@@ -97,7 +99,7 @@ export function PITIncomeSources({ incomeSources, selectedYear, totalBusinessInc
                     Calculated from your Invoices for {selectedYear}
                   </p>
                 </div>
-                <Link href="/dashboard/invoices">
+                <Link href="/dashboard/business/invoices">
                   <Button
                     size={ButtonSize.Sm}
                     variant={ButtonVariant.Outline}
@@ -143,5 +145,3 @@ export function PITIncomeSources({ incomeSources, selectedYear, totalBusinessInc
     </div>
   );
 }
-
-

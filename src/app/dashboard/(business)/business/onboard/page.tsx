@@ -30,6 +30,7 @@ import { businessActions } from "@/store/redux/business/business-slice";
 import { ButtonVariant } from "@/lib/utils/client-enums";
 import { UsagePeriod } from "@/lib/utils/usage-period";
 import { Building2, ArrowRight, X, RefreshCw, CheckCircle2 } from "lucide-react";
+import { PrivacyConsentCheckbox } from "@/components/shared/PrivacyConsentCheckbox";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -139,6 +140,14 @@ export default function BusinessOnboardPage() {
             if (!isValidNigerianState(value.trim())) {
               return "Please select a valid Nigerian state from the list";
             }
+          }
+          return null;
+        },
+      },
+      privacyConsentGiven: {
+        custom: (value) => {
+          if (value !== true) {
+            return "You must agree to the Privacy Policy to continue.";
           }
           return null;
         },
@@ -379,7 +388,7 @@ export default function BusinessOnboardPage() {
       isRegistered: values.isRegistered || false,
       // Include privacy consent data for legal compliance
       privacyConsentGiven: values.privacyConsentGiven ?? false,
-      privacyPolicyVersion: values.privacyConsentGiven ? (values.privacyPolicyVersion ?? CURRENT_PRIVACY_POLICY_VERSION) : undefined,
+      privacyPolicyVersion: values.privacyConsentGiven ? (values.privacyPolicyVersion || CURRENT_PRIVACY_POLICY_VERSION) : undefined,
     };
 
     // DEBUG: Log what's being sent to backend
@@ -420,11 +429,11 @@ export default function BusinessOnboardPage() {
         className="max-w-4xl mx-auto space-y-6"
       >
       <motion.div variants={itemVariants} className="mb-8">
-        <div className="flex items-center space-x-3 mb-4">
-          <Building2 className="w-8 h-8 text-emerald-600" />
-          <h1 className="text-4xl font-bold text-slate-900">Set Up Your Business</h1>
+        <div className="flex items-center md:items-start gap-3 mb-4">
+          <Building2 className="w-8 h-8 text-emerald-600 shrink-0 mt-1" />
+          <h1 className="text-2xl md:text-4xl font-bold text-slate-900">Set Up Your Business</h1>
         </div>
-        <div className="ml-11 space-y-3">
+        <div className="space-y-3 md:ml-11">
           <p className="text-lg text-slate-700 font-medium">
             We'll help you manage your taxes and tax compliance with NRS (Nigeria Revenue Service).
           </p>
@@ -751,28 +760,13 @@ export default function BusinessOnboardPage() {
             </motion.div>
 
             {/* Privacy Policy Consent */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              className="border-t border-slate-200 pt-6 mt-6"
-            >
-              <div className="flex items-start">
-                <input
-                  type="checkbox"
-                  id="privacyConsentGiven"
-                  checked={values.privacyConsentGiven || false}
-                  onChange={(e) => setValue("privacyConsentGiven", e.target.checked)}
-                  className="mt-1 w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 focus:ring-2"
-                />
-                <label htmlFor="privacyConsentGiven" className="ml-3 text-sm text-slate-600">
-                  I agree to the <Link href="/privacy-policy" className="text-emerald-600 hover:text-emerald-700 font-medium">Privacy Policy</Link> and consent to the processing of my company's data for tax purposes.
-                  {touched.privacyConsentGiven && errors.privacyConsentGiven && (
-                    <p className="text-red-500 mt-1">{errors.privacyConsentGiven}</p>
-                  )}
-                </label>
-              </div>
-            </motion.div>
+              <PrivacyConsentCheckbox
+                checked={values.privacyConsentGiven}
+                onChange={(checked) => setValue("privacyConsentGiven", checked)}
+                error={errors.privacyConsentGiven}
+                touched={touched.privacyConsentGiven}
+                entityType="business"
+              />
 
             <motion.div
               variants={itemVariants}

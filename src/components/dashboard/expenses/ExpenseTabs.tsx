@@ -24,17 +24,17 @@ interface ExpenseTabsProps {
 export function ExpenseTabs({ activeTab, onTabChange }: ExpenseTabsProps) {
   return (
     <motion.div variants={itemVariants}>
-      <div className="flex items-center space-x-2 border-b-2 border-emerald-100">
+      <div className="flex items-center space-x-2 border-b-2 border-emerald-100 w-full overflow-x-auto">
         <button
           onClick={() => onTabChange(ExpenseTabType.Expenses)}
-          className={`px-6 py-3 font-semibold text-sm transition-all relative ${
+          className={`flex-1 sm:flex-none px-3 py-3 md:px-6 font-semibold text-xs md:text-sm transition-all relative whitespace-nowrap ${
             activeTab === ExpenseTabType.Expenses
               ? "text-emerald-700"
               : "text-slate-600 hover:text-slate-900"
           }`}
         >
-          <div className="flex items-center space-x-2">
-            <Receipt className="w-5 h-5" />
+          <div className="flex items-center justify-center space-x-2">
+            <Receipt className="w-4 h-4 md:w-5 md:h-5" />
             <span>All Expenses</span>
           </div>
           {activeTab === ExpenseTabType.Expenses && (
@@ -48,14 +48,14 @@ export function ExpenseTabs({ activeTab, onTabChange }: ExpenseTabsProps) {
         </button>
         <button
           onClick={() => onTabChange(ExpenseTabType.PDFReports)}
-          className={`px-6 py-3 font-semibold text-sm transition-all relative ${
+          className={`flex-1 sm:flex-none px-3 py-3 md:px-6 font-semibold text-xs md:text-sm transition-all relative whitespace-nowrap ${
             activeTab === ExpenseTabType.PDFReports
               ? "text-emerald-700"
               : "text-slate-600 hover:text-slate-900"
           }`}
         >
-          <div className="flex items-center space-x-2">
-            <FileText className="w-5 h-5" />
+          <div className="flex items-center justify-center space-x-2">
+            <FileText className="w-4 h-4 md:w-5 md:h-5" />
             <span>PDF Reports</span>
           </div>
           {activeTab === ExpenseTabType.PDFReports && (

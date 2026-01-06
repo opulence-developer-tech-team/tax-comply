@@ -1,15 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/Button";
-import { RefreshCw, Gem, Sparkles } from "lucide-react";
-import { ButtonVariant } from "@/lib/utils/client-enums";
+import { Gem, Sparkles } from "lucide-react";
 
-interface ReferralHeaderProps {
-  onRefresh: () => void;
-}
-
-export function ReferralHeader({ onRefresh }: ReferralHeaderProps) {
+export function ReferralHeader() {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.98 }}
@@ -31,15 +25,6 @@ export function ReferralHeader({ onRefresh }: ReferralHeaderProps) {
           </p>
         </div>
       </div>
-      
-      <Button
-        onClick={onRefresh}
-        variant={ButtonVariant.Outline}
-        className="self-start sm:self-center bg-white hover:bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900 transition-all shadow-sm"
-      >
-        <RefreshCw className="w-4 h-4 mr-2" />
-        Refresh Data
-      </Button>
     </motion.div>
   );
 }

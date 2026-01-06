@@ -180,8 +180,8 @@ export function PitGuideModal({ isOpen, onClose, summary, isBusiness = false }: 
                 PIT Calculation (2026 Progressive Bands)
              </h4>
              
-             <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
-                <table className="w-full text-left text-sm">
+             <div className="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                <table className="w-full text-left text-sm min-w-[600px]">
                   <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
                     <tr>
                       <th className="px-4 py-3 font-semibold">Band Range</th>

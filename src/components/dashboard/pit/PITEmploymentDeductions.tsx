@@ -299,18 +299,18 @@ export function PITEmploymentDeductions({
   return (
     <>
       <motion.div variants={itemVariants}>
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-6">
-             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+        <Card className="p-0 md:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 sm:gap-0">
+             <div className="flex items-start sm:items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
                    <Briefcase className="w-5 h-5 text-emerald-600" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <h3 className="text-xl font-bold text-slate-900">Employment Deductions</h3>
                     <button 
                       onClick={() => setIsGuideOpen(true)}
-                      className="text-sm font-medium text-emerald-600 hover:text-emerald-700 underline decoration-dashed underline-offset-4 flex items-center gap-1 bg-transparent border-none p-0 cursor-pointer"
+                      className="text-sm font-medium text-emerald-600 hover:text-emerald-700 underline decoration-dashed underline-offset-4 flex items-center gap-1 bg-transparent border-none p-0 cursor-pointer whitespace-nowrap"
                     >
                       What is this?
                     </button>
@@ -323,7 +323,7 @@ export function PITEmploymentDeductions({
               variant={ButtonVariant.Outline}
               size={ButtonSize.Sm}
               onClick={handleOpenModal}
-              className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 text-base py-2 px-4"
+              className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 text-base py-2 px-4 w-full sm:w-auto"
             >
               {deductions ? "Edit Details" : "Add Deductions"}
             </Button>

@@ -881,19 +881,19 @@ export function PayrollContent({ entityId, accountType, currentPlan }: PayrollCo
             <p className="text-slate-600 mb-8 max-w-md mx-auto">
               Generate payroll for your employees to get started
             </p>
-            <div className="flex justify-center space-x-4">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <div className="flex flex-col sm:flex-row justify-center gap-4 w-full max-w-md mx-auto px-4 sm:px-0">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
                 <Button
                   variant={ButtonVariant.Outline}
                   onClick={() => router.push("/dashboard/employees")}
-                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 w-full"
                 >
                   <UserPlus className="w-4 h-4 mr-2" />
                   Add Employees
                 </Button>
               </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button onClick={handleGeneratePayrollClick}>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
+                <Button onClick={handleGeneratePayrollClick} className="w-full">
                   Generate Payroll
                 </Button>
               </motion.div>

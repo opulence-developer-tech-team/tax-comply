@@ -91,7 +91,7 @@ export function PITCalculationBreakdown({ summary, selectedYear, isBusiness = fa
 
   return (
     <Card className="p-0 overflow-hidden">
-      <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-4 md:p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
          <div>
             <h3 className="text-lg font-bold text-slate-900">Tax Calculation Summary</h3>
             <p className="text-sm text-slate-500">A quick look at how your tax was computed.</p>
@@ -100,16 +100,16 @@ export function PITCalculationBreakdown({ summary, selectedYear, isBusiness = fa
              but we can add a small helper here if needed. For now, clear data is the priority. */}
       </div>
 
-      <div className="p-6">
+      <div className="p-0 md:p-6">
         <div className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
            {/* Row 1: Gross Income */}
-           <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-white">
+           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b border-slate-200 bg-white gap-2 sm:gap-0">
               <span className="text-slate-700 font-medium text-base">Total Gross Income</span>
               <span className="font-bold text-slate-900 text-lg">{formatCurrency(totalGrossIncome)}</span>
            </div>
 
            {/* Row 2: Deductions */}
-            <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-white">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b border-slate-200 bg-white gap-2 sm:gap-0">
                <div className="flex items-center gap-2">
                   <span className="text-slate-700 font-medium text-base">Less: Total Tax Reliefs</span>
                   <SimpleTooltip content="Sum of all your allowable expenses, pension, NHF, etc.">
@@ -120,27 +120,27 @@ export function PITCalculationBreakdown({ summary, selectedYear, isBusiness = fa
             </div>
 
            {/* Row 3: Taxable Income */}
-           <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-blue-50/50">
+           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b border-slate-200 bg-blue-50/50 gap-2 sm:gap-0">
               <span className="text-blue-900 font-bold text-base">Equals: Taxable Income</span>
               <span className="font-bold text-blue-700 text-lg">{formatCurrency(totalTaxableIncome)}</span>
            </div>
            
             {/* Row 4: Calculated Tax */}
-           <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-white">
+           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b border-slate-200 bg-white gap-2 sm:gap-0">
               <span className="text-slate-700 font-medium text-base">Tax Calculated (Before Credits)</span>
               <span className="font-bold text-slate-900 text-lg">{formatCurrency(pitBeforeWHT)}</span>
            </div>
 
             {/* Row 5: WHT Credits */}
            {whtCredits > 0 && (
-             <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-white">
+             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b border-slate-200 bg-white gap-2 sm:gap-0">
                 <span className="text-slate-700 font-medium text-base">Less: WHT Credits (Already Paid)</span>
                 <span className="font-bold text-emerald-600 text-lg">- {formatCurrency(whtCredits)}</span>
              </div>
            )}
 
            {/* Row 5b: Effective Tax Rate */}
-           <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-white">
+           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b border-slate-200 bg-white gap-2 sm:gap-0">
               <div className="flex items-center gap-2">
                  <span className="text-slate-700 font-medium text-base">Effective Tax Rate</span>
                  <SimpleTooltip content="The actual percentage of your total income that goes to tax.">
@@ -153,7 +153,7 @@ export function PITCalculationBreakdown({ summary, selectedYear, isBusiness = fa
            </div>
 
            {/* Row 6: Final Tax */}
-           <div className="flex items-center justify-between p-4 bg-slate-100">
+           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-slate-100 gap-2 sm:gap-0">
               <div className="flex items-center gap-2">
                  <span className="text-slate-900 font-extrabold text-xl">Final Tax to Pay</span>
                  {isFullyExempt && (

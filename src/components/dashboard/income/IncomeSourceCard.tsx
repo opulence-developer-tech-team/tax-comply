@@ -28,31 +28,31 @@ export function IncomeSourceCard({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-green-300 hover:bg-green-50/50 transition-all"
+      className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-green-300 hover:bg-green-50/50 transition-all gap-4 sm:gap-0"
     >
-      <div className="flex-1">
-        <div className="flex items-center space-x-3 mb-1">
-          <Coins className="w-5 h-5 text-green-600" aria-hidden="true" />
-          <p className="text-xl font-bold text-slate-900">
+      <div className="flex-1 w-full sm:w-auto">
+        <div className="flex items-center space-x-3 mb-2 sm:mb-1">
+          <Coins className="w-5 h-5 text-green-600 shrink-0" aria-hidden="true" />
+          <p className="text-xl font-bold text-slate-900 break-all">
             {formatCurrency(income.annualIncome)}
           </p>
           {income.month ? (
-            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
+            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium shrink-0">
               Monthly
             </span>
           ) : (
-            <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-medium">
+            <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-medium shrink-0">
               Yearly
             </span>
           )}
         </div>
-        <div className="flex items-center space-x-4 text-sm text-slate-600 ml-8">
-          <div className="flex items-center space-x-1">
-            <Calendar className="w-4 h-4" aria-hidden="true" />
+        <div className="flex flex-wrap items-center gap-y-2 text-sm text-slate-600 sm:ml-8">
+          <div className="flex items-center mr-4">
+            <Calendar className="w-4 h-4 mr-1 shrink-0" aria-hidden="true" />
             <span>Tax Year {income.taxYear}</span>
           </div>
           {income.month && (
-            <span>
+            <span className="mr-4">
               Month: {new Date(2000, income.month - 1).toLocaleString("default", { month: "long" })}
             </span>
           )}
@@ -63,7 +63,7 @@ export function IncomeSourceCard({
           )}
         </div>
       </div>
-      <div className="flex items-center space-x-2 ml-4">
+      <div className="flex items-center justify-end w-full sm:w-auto space-x-2 sm:ml-4 border-t sm:border-t-0 border-slate-200 pt-3 sm:pt-0 mt-2 sm:mt-0">
         <button
           onClick={() => onEdit(income)}
           className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors"

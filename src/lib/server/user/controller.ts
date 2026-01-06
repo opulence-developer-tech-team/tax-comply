@@ -6,6 +6,7 @@ import { IUserSignIn, IUserSignUp } from "./interface";
 import { comparePassCode, hashPassCode } from "../utils/auth";
 import { userService } from "./service";
 import { authService } from "../auth/service";
+import { referralService } from "../referral/service";
 import { logger } from "../utils/logger";
 import { Types } from "mongoose";
 import { userValidator } from "./validator";
@@ -24,6 +25,19 @@ class UserController {
           description: "User with this email already exists.",
           data: null,
         });
+      }
+
+      // Check if usage of referral code is valid
+      if (body.referralId) {
+        const referrer = await referralService.findUserByReferralId(body.referralId);
+        if (!referrer) {
+           return utils.customResponse({
+            status: 404,
+            message: MessageResponse.Error,
+            description: "Invalid referral code. Please check the code and try again.",
+            data: null,
+          });
+        }
       }
 
       const hashedPassword = (await hashPassCode(body.password)) as string;

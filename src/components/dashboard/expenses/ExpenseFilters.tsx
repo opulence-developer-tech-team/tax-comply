@@ -95,19 +95,19 @@ export function ExpenseFilters({
       <Card className="bg-white border-2 border-emerald-100 shadow-lg shadow-emerald-500/5 overflow-hidden">
         {/* Header - Always Visible */}
         <div className="p-4 md:p-6 bg-gradient-to-r from-emerald-50/50 to-white border-b border-emerald-100">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4">
             {/* Search - Always Visible */}
-            <div className="flex-1 relative">
+            <div className="flex-1 relative w-full">
               <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
                 isSearching ? "text-emerald-600 animate-pulse" : "text-slate-400"
               }`} />
               <Input
-                placeholder="Search (e.g. Fuel, Rent, MTN data)..."
+                placeholder="Search (e.g. Fuel, Rent)..."
                 value={searchTerm}
                 onChange={(e) => {
                   onSearchChange(e.target.value);
                 }}
-                className="pl-12 pr-12 border-2 border-emerald-100 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 bg-white"
+                className="pl-12 pr-12 w-full border-2 border-emerald-100 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 bg-white"
               />
               {isSearching && (
                 <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
@@ -116,40 +116,42 @@ export function ExpenseFilters({
               )}
             </div>
 
-            {/* Expand/Collapse Button */}
-            <Button
-              variant={ButtonVariant.Outline}
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="border-2 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700 transition-all"
-            >
-              <Filter className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Filters</span>
-              {activeFiltersCount > 0 && (
-                <span className="ml-2 px-2 py-0.5 bg-emerald-600 text-white text-xs font-bold rounded-full">
-                  {activeFiltersCount}
-                </span>
-              )}
-              <motion.div
-                animate={{ rotate: isExpanded ? 180 : 0 }}
-                transition={{ duration: 0.3 }}
-                className="ml-2"
-              >
-                <ChevronDown className="w-4 h-4" />
-              </motion.div>
-            </Button>
-
-            {/* Clear Filters Button - Only show if filters are active */}
-            {activeFiltersCount > 0 && onClearFilters && (
-              <Button
+            <div className="flex items-center gap-2 md:gap-4 shrink-0 overflow-x-auto pb-1 md:pb-0">
+                {/* Expand/Collapse Button */}
+                <Button
                 variant={ButtonVariant.Outline}
-                onClick={onClearFilters}
-                className="border-2 border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-600 hover:text-slate-700"
-                size={ButtonSize.Sm}
-              >
-                <X className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Clear</span>
-              </Button>
-            )}
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="border-2 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700 transition-all flex items-center justify-center shrink-0"
+                >
+                <Filter className="w-4 h-4 mr-2" />
+                <span>Filters</span>
+                {activeFiltersCount > 0 && (
+                    <span className="ml-2 px-2 py-0.5 bg-emerald-600 text-white text-xs font-bold rounded-full">
+                    {activeFiltersCount}
+                    </span>
+                )}
+                <motion.div
+                    animate={{ rotate: isExpanded ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="ml-2"
+                >
+                    <ChevronDown className="w-4 h-4" />
+                </motion.div>
+                </Button>
+
+                {/* Clear Filters Button - Only show if filters are active */}
+                {activeFiltersCount > 0 && onClearFilters && (
+                <Button
+                    variant={ButtonVariant.Outline}
+                    onClick={onClearFilters}
+                    className="border-2 border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-600 hover:text-slate-700 shrink-0"
+                    size={ButtonSize.Sm}
+                >
+                    <X className="w-4 h-4 md:mr-2" />
+                    <span className="hidden md:inline">Clear</span>
+                </Button>
+                )}
+            </div>
           </div>
         </div>
 
@@ -276,18 +278,18 @@ export function ExpenseFilters({
                       <ArrowUpDown className="w-4 h-4 text-emerald-600" />
                       Sort By
                     </label>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
                       {sortOptions.map(({ field, label }) => (
                         <button
                           key={field}
                           onClick={() => onSort(field)}
-                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                          className={`px-3 py-2 md:px-4 rounded-lg text-xs md:text-sm font-medium transition-all ${
                             sortField === field
                               ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/30"
                               : "bg-white text-slate-700 hover:bg-emerald-50 border-2 border-emerald-100 hover:border-emerald-200"
                           }`}
                         >
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center justify-center gap-1.5">
                             <span>{label}</span>
                             {sortField === field && (
                               <ArrowUpDown className={`w-3.5 h-3.5 ${sortOrder === SortOrder.Asc ? "rotate-180" : ""}`} />

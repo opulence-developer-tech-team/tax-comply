@@ -62,7 +62,7 @@ export function PITSummaryCards({ summary, isBusiness = false }: PITSummaryCards
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {/* Card 1: Total Money In (Gross Income) */}
-      <Card className="p-6 hover:shadow-md transition-shadow duration-200 border-emerald-100 bg-white group relative overflow-hidden">
+      <Card className="p-4 md:p-6 hover:shadow-md transition-shadow duration-200 border-emerald-100 bg-white group relative overflow-hidden">
         <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
            <TrendingUp className="w-24 h-24 text-emerald-600" aria-hidden="true" />
         </div>
@@ -106,7 +106,7 @@ export function PITSummaryCards({ summary, isBusiness = false }: PITSummaryCards
       </Card>
 
       {/* Card 3: Tax Deductions/Reliefs */}
-      <Card className="p-6 hover:shadow-md transition-shadow duration-200 border-rose-100 bg-white group relative overflow-hidden">
+      <Card className="p-4 md:p-6 hover:shadow-md transition-shadow duration-200 border-rose-100 bg-white group relative overflow-hidden">
         <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
            <TrendingDown className="w-24 h-24 text-rose-600" aria-hidden="true" />
         </div>
@@ -150,7 +150,7 @@ export function PITSummaryCards({ summary, isBusiness = false }: PITSummaryCards
       </Card>
 
       {/* Card 4: Taxable Income (Net) */}
-      <Card className="p-6 hover:shadow-md transition-shadow duration-200 border-emerald-100 bg-white group relative overflow-hidden">
+      <Card className="p-4 md:p-6 hover:shadow-md transition-shadow duration-200 border-emerald-100 bg-white group relative overflow-hidden">
         <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
            <Wallet className="w-24 h-24 text-emerald-800" aria-hidden="true" />
         </div>
@@ -184,7 +184,7 @@ export function PITSummaryCards({ summary, isBusiness = false }: PITSummaryCards
       </Card>
 
       {/* Card 5: Tax You Owe (Liability) */}
-      <Card className="p-6 hover:shadow-md transition-shadow duration-200 border-amber-100 bg-white group relative overflow-hidden">
+      <Card className="p-4 md:p-6 hover:shadow-md transition-shadow duration-200 border-amber-100 bg-white group relative overflow-hidden">
         <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
            <Building2 className="w-24 h-24 text-amber-600" aria-hidden="true" />
         </div>
@@ -229,7 +229,7 @@ export function PITSummaryCards({ summary, isBusiness = false }: PITSummaryCards
       </Card>
 
       {/* Card 6: Payment Status (Spans remaining columns) */}
-      <Card className="p-6 hover:shadow-md transition-shadow duration-200 border-emerald-100 bg-white group relative overflow-hidden md:col-span-2 lg:col-span-2">
+      <Card className="p-4 md:p-6 hover:shadow-md transition-shadow duration-200 border-emerald-100 bg-white group relative overflow-hidden md:col-span-2 lg:col-span-2">
          <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
            <ShieldCheck className="w-24 h-24 text-emerald-600" aria-hidden="true" />
         </div>

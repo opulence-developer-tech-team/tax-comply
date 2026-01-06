@@ -11,7 +11,7 @@ import { vatService } from "../vat/service";
 // VATRecord import removed - VAT is now calculated on-the-fly from invoices/expenses
 import Company from "../company/entity";
 import { AccountType, TaxClassification, ExpenseCategory, TransactionType } from "../utils/enum";
-import { NRS_CIT_SMALL_COMPANY_THRESHOLD_2026, NRS_VAT_TURNOVER_THRESHOLD_2026 } from "../../constants/nrs-constants";
+import { NRS_VAT_TURNOVER_THRESHOLD_2026 } from "../../constants/nrs-constants";
 import { VATType } from "../utils/vat-type";
 import { ExpenseSortField } from "../utils/expense-sort-field";
 import { SortOrder } from "../utils/sort-order";

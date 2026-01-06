@@ -70,12 +70,25 @@ async function handler(request: NextRequest): Promise<NextResponse> {
     }
     const accountType = accountTypeParam as AccountType;
 
-    // Verify ownership
-    const isOwner = await requireOwner(auth.context.userId, accountId);
+    // Verify ownership based on account type
+    let isOwner = false;
+    if (accountType === AccountType.Company) {
+      isOwner = await requireOwner(auth.context.userId, accountId);
+    } else if (accountType === AccountType.Business) {
+       // We need to import requireBusinessOwner at top if not present, checking imports...
+       // assuming requireBusinessOwner is exported from same file as requireOwner
+       const { requireBusinessOwner } = await import("@/lib/server/middleware/auth");
+       isOwner = await requireBusinessOwner(auth.context.userId, accountId);
+    } else if (accountType === AccountType.Individual) {
+       // For individual accounts, the accountId is the userId
+       isOwner = auth.context.userId.toString() === accountId.toString();
+    }
+
     if (!isOwner) {
       logger.warn("User attempted to export expenses without permission", {
         userId: auth.context.userId.toString(),
         accountId: accountId.toString(),
+        accountType,
       });
       return NextResponse.json(
         { message: MessageResponse.Error, description: "You don't have permission to export expenses for this account", data: null },

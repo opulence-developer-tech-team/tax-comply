@@ -70,25 +70,9 @@ async function handler(request: Request): Promise<NextResponse> {
     const plan = subscription?.plan || SubscriptionPlan.Free;
     const planFeatures = SUBSCRIPTION_PRICING[plan]?.features;
     
-    if (!planFeatures?.pitReturns) {
-      const currentPlan = plan.toLowerCase();
-      return NextResponse.json(
-        { 
-          message: "error", 
-          description: "PIT return document downloads are available on Starter plan (₦3,500/month) and above. Upgrade to download PIT return documents formatted per NRS (Nigeria Revenue Service) requirements.",
-          data: {
-            upgradeRequired: {
-              feature: "PIT Return Document Downloads",
-              currentPlan,
-              requiredPlan: "starter",
-              requiredPlanPrice: SUBSCRIPTION_PRICING[SubscriptionPlan.Starter].monthly,
-              reason: "plan_limitation",
-            },
-          },
-        },
-        { status: 403 }
-      );
-    }
+    // If plan doesn't include PIT returns, we add a watermark instead of blocking
+    // CRITICAL: We also check general 'exports' feature as a fallback
+    const isWatermarked = !planFeatures?.pitReturns && !planFeatures?.exports;
 
     // Validate year parameter
     if (!yearParam) {
@@ -119,7 +103,7 @@ async function handler(request: Request): Promise<NextResponse> {
       userId: auth.context.userId.toString(),
     });
 
-    const pdfBuffer = await generatePITReturnPDF(accountId, year);
+    const pdfBuffer = await generatePITReturnPDF(accountId, year, isWatermarked);
 
     // Generate filename
     const filename = `PIT-Return-${year}.pdf`;

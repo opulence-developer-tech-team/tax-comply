@@ -325,6 +325,15 @@ export default function CITPage() {
       selectedYear,
     });
 
+    // Check feature access
+    if (!hasCITRemittance) {
+       dispatch(citActions.setCITRemittances({
+        remittances: [],
+        companyId: companyId,
+      }));
+      return;
+    }
+
     fetchCITReq({
       successRes: (response: any) => {
         console.log("[CIT_PAGE] CIT remittances fetched successfully:", {
@@ -371,6 +380,15 @@ export default function CITPage() {
         }
       },
       errorRes: (errorResponse: any) => {
+        // Ignore 403 (Forbidden) errors, as they likely indicate plan limitations (e.g. Free plan)
+        if (errorResponse?.status === 403) {
+           dispatch(citActions.setCITRemittances({
+            remittances: [],
+            companyId: companyId,
+          }));
+          return;
+        }
+
         console.error("[CIT_PAGE] Failed to fetch CIT remittances:", {
           errorResponse,
           errorStatus: errorResponse?.status,
@@ -465,7 +483,7 @@ export default function CITPage() {
   if (!isCompanyAccount) {
     return (
       <RouteGuard requireAccountType={AccountType.Company}>
-        <div className="p-6">
+        <div className="p-3 md:p-6">
           <ErrorState
             title="Access Denied"
             description="CIT (Company Income Tax) is only available for Company accounts. Business accounts (sole proprietorships) use PIT (Personal Income Tax)."
@@ -481,7 +499,7 @@ export default function CITPage() {
 
   if (isLoadingCompany || (!companyId && !isLoadingCompany)) {
     return (
-      <div className="p-6">
+      <div className="p-3 md:p-6">
         <LoadingState size={LoadingStateSize.Lg} message="Loading company data..." />
       </div>
     );
@@ -489,7 +507,7 @@ export default function CITPage() {
 
   if (isLoading && !hasFetched) {
     return (
-      <div className="p-6">
+      <div className="p-3 md:p-6">
         <LoadingState size={LoadingStateSize.Lg} message="Loading CIT data..." />
       </div>
     );
@@ -497,7 +515,7 @@ export default function CITPage() {
 
   if (error && !hasFetched) {
     return (
-      <div className="p-6">
+      <div className="p-3 md:p-6">
         <ErrorState
           title="Error Loading CIT Data"
           description={error}
@@ -515,7 +533,7 @@ export default function CITPage() {
 
   return (
     <RouteGuard requireAccountType={AccountType.Company}>
-      <div className="p-6 space-y-6">
+      <div className="p-0 md:p-6 space-y-6">
         <UpgradePromptComponent />
         
         {/* Header */}
@@ -840,8 +858,8 @@ export default function CITPage() {
             initial="hidden"
             animate="visible"
           >
-            <Card className="p-6 bg-blue-50 border-2 border-blue-200">
-              <div className="flex items-start gap-4">
+            <Card className="p-0 md:p-6 bg-blue-50 border-2 border-blue-200">
+              <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
                 <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center shrink-0 mt-0.5">
                   <span className="text-blue-600 text-xl">💡</span>
                 </div>
@@ -906,43 +924,43 @@ export default function CITPage() {
             initial="hidden"
             animate="visible"
           >
-            <Card className="p-0">
+            <Card className="p-0 md:p-6">
               <button
                 type="button"
                 onClick={() => setIsCalculationBreakdownExpanded(!isCalculationBreakdownExpanded)}
-                className="w-full flex items-center justify-between mb-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 rounded-lg p-2 -m-2 hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center justify-between mb-4 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 rounded-lg hover:bg-gray-50 transition-colors p-2 -ml-2"
                 aria-expanded={isCalculationBreakdownExpanded}
               >
-                <h2 className="text-xl font-bold text-gray-900">Calculation Breakdown</h2>
+                <h2 className="text-lg md:text-xl font-bold text-gray-900">Calculation Breakdown</h2>
                 {isCalculationBreakdownExpanded ? (
-                  <ChevronUp className="w-6 h-6 text-gray-600" />
+                  <ChevronUp className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
                 ) : (
-                  <ChevronDown className="w-6 h-6 text-gray-600" />
+                  <ChevronDown className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
                 )}
               </button>
               {isCalculationBreakdownExpanded && (
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                    <span className="text-base text-gray-700 font-medium">Total Revenue (from paid invoices)</span>
-                    <span className="text-base font-semibold text-gray-900">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-3 border-b border-gray-200 gap-1 sm:gap-0">
+                    <span className="text-sm md:text-base text-gray-700 font-medium">Total Revenue (from paid invoices)</span>
+                    <span className="text-sm md:text-base font-semibold text-gray-900 bg-gray-50 sm:bg-transparent px-2 py-1 sm:p-0 rounded sm:rounded-none inline-block w-fit">
                       {formatCurrency(summary.totalRevenue)}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                    <span className="text-base text-gray-700 font-medium">Total Tax-Deductible Expenses</span>
-                    <span className="text-base font-semibold text-gray-900">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-3 border-b border-gray-200 gap-1 sm:gap-0">
+                    <span className="text-sm md:text-base text-gray-700 font-medium">Total Tax-Deductible Expenses</span>
+                    <span className="text-sm md:text-base font-semibold text-gray-900 bg-gray-50 sm:bg-transparent px-2 py-1 sm:p-0 rounded sm:rounded-none inline-block w-fit">
                       {formatCurrency(summary.totalExpenses)}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                    <span className="text-base text-gray-700 font-medium">Taxable Profit</span>
-                    <span className="text-base font-semibold text-gray-900">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-3 border-b border-gray-200 gap-1 sm:gap-0">
+                    <span className="text-sm md:text-base text-gray-700 font-medium">Taxable Profit</span>
+                    <span className="text-sm md:text-base font-semibold text-gray-900 bg-gray-50 sm:bg-transparent px-2 py-1 sm:p-0 rounded sm:rounded-none inline-block w-fit">
                       {formatCurrency(summary.taxableProfit)}
                     </span>
                   </div>
-                  <div className="flex justify-between items-start py-2 border-b border-gray-200">
-                    <div className="flex-1">
-                      <span className="text-base text-gray-700 font-medium">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start py-3 border-b border-gray-200 gap-2 sm:gap-4">
+                    <div className="w-full sm:flex-1">
+                      <span className="text-sm md:text-base text-gray-700 font-medium">
                         CIT Before WHT Credits ({(() => {
                           // CRITICAL: Validate citRate before displaying - fail loudly if invalid
                           if (summary.citRate === undefined || summary.citRate === null) {
@@ -997,13 +1015,13 @@ export default function CITPage() {
                         </p>
                       </div>
                     </div>
-                    <span className="text-base font-semibold text-gray-900 ml-4 whitespace-nowrap">
+                    <span className="text-sm md:text-base font-semibold text-gray-900 bg-gray-50 sm:bg-transparent px-2 py-1 sm:p-0 rounded sm:rounded-none inline-block w-fit self-start sm:self-auto sm:ml-4 whitespace-nowrap">
                       {formatCurrency(summary.citBeforeWHT)}
                     </span>
                   </div>
-                  <div className="flex justify-between items-start py-2 border-b border-gray-200">
-                    <div className="flex-1">
-                      <span className="text-base text-gray-700 font-medium">WHT Credits Applied</span>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start py-3 border-b border-gray-200 gap-2 sm:gap-4">
+                    <div className="w-full sm:flex-1">
+                      <span className="text-sm md:text-base text-gray-700 font-medium">WHT Credits Applied</span>
                       <div className="mt-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
                         <p className="text-sm text-emerald-900 leading-relaxed mb-2">
                           <strong>💡 What are WHT Credits?</strong>
@@ -1034,7 +1052,7 @@ export default function CITPage() {
                         </p>
                       </div>
                     </div>
-                    <span className="text-base font-semibold text-emerald-600 ml-4 whitespace-nowrap">
+                    <span className="text-sm md:text-base font-semibold text-emerald-600 bg-emerald-50 sm:bg-transparent px-2 py-1 sm:p-0 rounded sm:rounded-none inline-block w-fit self-start sm:self-auto sm:ml-4 whitespace-nowrap">
                       -{(() => {
                         // CRITICAL: Validate whtCredits before displaying - fail loudly if invalid
                         if (summary.whtCredits === undefined || summary.whtCredits === null) {
@@ -1049,22 +1067,22 @@ export default function CITPage() {
                       })()}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center py-3 border-b-2 border-gray-300">
-                    <span className="text-lg font-bold text-gray-900">CIT After WHT Credits</span>
-                    <span className="text-lg font-bold text-gray-900">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-3 border-b-2 border-gray-300 gap-1 sm:gap-0">
+                    <span className="text-base md:text-lg font-bold text-gray-900">CIT After WHT Credits</span>
+                    <span className="text-base md:text-lg font-bold text-gray-900 bg-gray-100 sm:bg-transparent px-2 py-1 sm:p-0 rounded sm:rounded-none inline-block w-fit">
                       {formatCurrency(summary.citAfterWHT)}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                    <span className="text-base text-gray-700 font-medium">Total CIT Remitted</span>
-                    <span className="text-base font-semibold text-emerald-600">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-3 border-b border-gray-200 gap-1 sm:gap-0">
+                    <span className="text-sm md:text-base text-gray-700 font-medium">Total CIT Remitted</span>
+                    <span className="text-sm md:text-base font-semibold text-emerald-600 bg-emerald-50 sm:bg-transparent px-2 py-1 sm:p-0 rounded sm:rounded-none inline-block w-fit">
                       {formatCurrency(summary.totalCITRemitted)}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-lg font-bold text-gray-900">CIT Pending</span>
-                    <span className={`text-lg font-bold ${
-                      summary.totalCITPending > 0 ? "text-red-600" : "text-emerald-600"
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-3 gap-1 sm:gap-0">
+                    <span className="text-base md:text-lg font-bold text-gray-900">CIT Pending</span>
+                    <span className={`text-base md:text-lg font-bold bg-gray-50 sm:bg-transparent px-2 py-1 sm:p-0 rounded sm:rounded-none inline-block w-fit ${
+                      summary.totalCITPending > 0 ? "text-red-600 bg-red-50 sm:bg-transparent" : "text-emerald-600 bg-emerald-50 sm:bg-transparent"
                     }`}>
                       {formatCurrency(summary.totalCITPending)}
                     </span>

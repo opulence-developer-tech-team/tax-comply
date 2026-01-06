@@ -70,25 +70,8 @@ async function handler(request: Request): Promise<NextResponse> {
     const plan = subscription?.plan || SubscriptionPlan.Free;
     const planFeatures = SUBSCRIPTION_PRICING[plan]?.features;
     
-    if (!planFeatures?.exports) {
-      const currentPlan = plan.toLowerCase();
-      return NextResponse.json(
-        { 
-          message: "error", 
-          description: "Tax filing document downloads are available on Starter plan (₦3,500/month) and above. Upgrade to download tax filing documents formatted per NRS (Nigeria Revenue Service) requirements.",
-          data: {
-            upgradeRequired: {
-              feature: "Tax Filing Document Downloads",
-              currentPlan,
-              requiredPlan: "starter",
-              requiredPlanPrice: SUBSCRIPTION_PRICING[SubscriptionPlan.Starter].monthly,
-              reason: "plan_limitation" as const,
-            },
-          },
-        },
-        { status: 403 }
-      );
-    }
+    // If plan doesn't include exports, we add a watermark instead of blocking
+    const isWatermarked = !planFeatures?.exports;
 
     // Parse year
     const now = new Date();
@@ -115,7 +98,7 @@ async function handler(request: Request): Promise<NextResponse> {
     }
 
     // Generate PDF
-    const pdfBuffer = await generateCITReturnPDF(companyId, validYear);
+    const pdfBuffer = await generateCITReturnPDF(companyId, validYear, isWatermarked);
     const filename = `CIT-Return-${validYear}.pdf`;
 
     // Return PDF as response

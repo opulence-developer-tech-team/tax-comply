@@ -264,6 +264,26 @@ export function calculateAnnualPIT(
 }
 
 /**
+ * Check if a company is exempt from CIT based on turnover and tax year.
+ * Source: Nigeria Tax Act 2025
+ * 
+ * - Pre-2026: Exempt if turnover <= 25M
+ * - 2026+: Exempt if turnover <= 50M
+ * 
+ * @param annualTurnover - Annual turnover of the company
+ * @param taxYear - Tax year
+ */
+export function isCITExempt(annualTurnover: number, taxYear?: number): boolean {
+  const year = taxYear || getTaxYear();
+  
+  if (year >= 2026) {
+    return annualTurnover <= 50_000_000;
+  } else {
+    return annualTurnover <= 25_000_000;
+  }
+}
+
+/**
  * Calculate Company Income Tax (CIT) for companies.
  * 
  * @param taxableIncome - Annual taxable income (after deductions)

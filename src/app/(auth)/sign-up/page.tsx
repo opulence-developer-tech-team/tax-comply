@@ -84,6 +84,12 @@ export default function SignUpPage({ referralId: propReferralId }: SignUpPagePro
       // Pass email as query parameter to verify-email page
       const email = encodeURIComponent(values.email.trim());
       
+      // Clear any stored redirect path from previous sessions to prevent
+      // redirecting a new user to an old page after they log in
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("redirectAfterLogin");
+      }
+
       // Store return URL token if present (for review flow)
       if (returnUrl && typeof window !== "undefined") {
         sessionStorage.setItem("return_url", returnUrl);

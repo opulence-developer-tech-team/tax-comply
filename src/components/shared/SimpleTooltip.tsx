@@ -59,14 +59,28 @@ export function SimpleTooltip({
   useEffect(() => {
     if (isVisible) {
       updatePosition();
+      
       const handleScroll = () => updatePosition();
       const handleResize = () => updatePosition();
+      
+      // Close on click outside (Critical for mobile)
+      const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+        if (triggerRef.current && !triggerRef.current.contains(event.target as Node)) {
+          setIsVisible(false);
+        }
+      };
+
       // CRITICAL: Use capture phase (true) to catch all scroll events
       window.addEventListener("scroll", handleScroll, true);
       window.addEventListener("resize", handleResize);
+      document.addEventListener("click", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside); // For iOS responsiveness
+
       return () => {
         window.removeEventListener("scroll", handleScroll, true);
         window.removeEventListener("resize", handleResize);
+        document.removeEventListener("click", handleClickOutside);
+        document.removeEventListener("touchstart", handleClickOutside);
       };
     }
   }, [isVisible, updatePosition]);
@@ -91,9 +105,11 @@ export function SimpleTooltip({
         onBlur={() => setIsVisible(false)}
         onClick={(e) => {
           e.stopPropagation();
+          e.preventDefault(); // Prevent ghost clicks
           updatePosition();
-          // Mobile safety: Ensure it opens on tap if focus didn't catch it
-          if (!isVisible) setIsVisible(true);
+          // Mobile Support: Force open on click to prevent focus/hover conflicts
+          // Closing is handled by the document click-outside listener
+          setIsVisible(true);
         }}
         className="relative inline-block cursor-help z-10"
         role="button"

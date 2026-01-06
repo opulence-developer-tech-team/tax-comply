@@ -158,9 +158,58 @@ class IncomeService {
     const validCurrentYear = Math.max(minTaxYear, currentYear);
     const yearToFilter = filters?.year !== undefined ? filters.year : validCurrentYear;
     
-    // CRITICAL: Validate year if provided - must be >= 2026
     if (yearToFilter !== null && yearToFilter < 2026) {
       throw new Error("Invalid tax year. This application only supports tax years 2026 and onward per Nigeria Tax Act 2025.");
+    }
+
+    // CRITICAL: For Business accounts, income (Annual Turnover) is derived from PAID INVOICES
+    // We do NOT use manual income entries for businesses.
+    // Instead, we aggregate paid invoices for the specific period.
+    if (entityType === AccountType.Business) {
+      const Invoice = (await import("../invoice/entity")).default;
+      const { InvoiceStatus } = await import("../utils/enum");
+
+      const matchStage: any = {
+        businessId: new Types.ObjectId(accountId),
+        status: InvoiceStatus.Paid,
+      };
+
+      if (yearToFilter !== null) {
+        const startDate = new Date(`${yearToFilter}-01-01T00:00:00.000Z`);
+        const endDate = new Date(`${yearToFilter}-12-31T23:59:59.999Z`);
+        matchStage.issueDate = { $gte: startDate, $lte: endDate };
+      }
+
+      // Aggregate Paid Invoices by Month
+      const aggregationPipeline = [
+        { $match: matchStage },
+        { 
+          $group: {
+            _id: { $month: "$issueDate" }, // Group by month (1-12)
+            monthlyIncome: { $sum: "$total" } // Sum of paid invoices (Gross Income)
+          } 
+        },
+        { $sort: { _id: 1 } as any } // Sort by month ascending
+      ];
+
+      const monthlyResults = await Invoice.aggregate(aggregationPipeline);
+
+      // Transform aggregation results into IIncome structure
+      const incomes: IIncome[] = monthlyResults.map((result) => ({
+        _id: new Types.ObjectId(), // Virtual ID for client handling
+        accountId: new Types.ObjectId(accountId),
+        entityType: AccountType.Business,
+        taxYear: yearToFilter || validCurrentYear,
+        month: result._id,
+        annualIncome: result.monthlyIncome, // Monthly income
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }));
+
+      // Calculate pseudo-total for pagination logic (not strictly paginated here as we return all months)
+      const total = incomes.length;
+
+      return { incomes, total };
     }
     
     // Month filter - optional, can filter by specific month

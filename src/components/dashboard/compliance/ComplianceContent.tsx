@@ -308,16 +308,13 @@ export function ComplianceContent({ entityId, accountType, currentPlan }: Compli
     if (downloadingDoc) return; // Already downloading, prevent duplicate requests
 
     // Check if user has export access (Free plan doesn't have exports)
+    // Check if user has export access (Free plan doesn't have exports)
     if (!hasExportAccess) {
-      showUpgradePrompt({
-        feature: "Tax Filing Document Downloads",
-        currentPlan: currentPlan.toLowerCase(),
-        requiredPlan: "starter",
-        requiredPlanPrice: SUBSCRIPTION_PRICING[SubscriptionPlan.Starter].monthly,
-        message: "Upgrade to download official tax schedules and draft returns.",
-        reason: UpgradeReason.PlanLimitation,
+      toast.info("Free Plan Limitation", {
+        description: "Your document will include a 'taxcomply.ng' watermark. Upgrade to the Starter plan for official, unbranded documents.",
+        duration: 5000,
       });
-      return;
+      // Allow download to proceed with watermark
     }
 
     setDownloadingDoc(deadlineName);
@@ -499,7 +496,7 @@ export function ComplianceContent({ entityId, accountType, currentPlan }: Compli
                 subtitle="A high score means you are safe from NRS fines."
               >
                 <div className="space-y-6">
-                  <div className="flex items-center space-x-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                     <motion.div
                       initial={{ scale: 0.9 }}
                       animate={{ scale: 1 }}
@@ -511,7 +508,7 @@ export function ComplianceContent({ entityId, accountType, currentPlan }: Compli
                       {complianceStatus.status === 'compliant' ? "SAFE" : 
                        complianceStatus.status === 'at_risk' ? "AT RISK" : "DANGER"}
                     </motion.div>
-                    <div className="flex-1">
+                    <div className="flex-1 w-full">
                       <div className="flex items-center space-x-3">
                         <div className="flex-1 bg-slate-200 rounded-full h-3 overflow-hidden">
                           <motion.div

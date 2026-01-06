@@ -364,7 +364,8 @@ export function InvoicesContent({ entityId, accountType }: InvoicesContentProps)
       {/* Guide Modal */}
       <InvoicesGuideModal 
         isOpen={isGuideOpen} 
-        onClose={() => setIsGuideOpen(false)} 
+        onClose={() => setIsGuideOpen(false)}
+        accountType={accountType}
       />
 
       {/* Next Step Navigation */}

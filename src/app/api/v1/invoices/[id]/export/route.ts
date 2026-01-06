@@ -68,23 +68,31 @@ export async function GET(
     }
 
     // SECURITY & ENTITY RETRIEVAL: Check if it's a Company or Business invoice
-    // Invoice.companyId is used for both (polymorphic)
+    // Invoice uses companyId or businessId
+    const entityId = invoice.companyId || invoice.businessId;
+
+    if (!entityId) {
+       return NextResponse.json(
+        { message: "error", description: "Invoice is not linked to any Company or Business", data: null },
+        { status: 500 }
+      );
+    }
     
     let entity: any = null;
     let isOwner = false;
     let isCompany = true;
 
     // Try Company first
-    entity = await companyService.getCompanyById(invoice.companyId);
+    entity = await companyService.getCompanyById(entityId);
     
     if (entity) {
-      isOwner = await requireOwner(auth.context.userId, invoice.companyId);
+      isOwner = await requireOwner(auth.context.userId, entityId);
     } else {
       // Try Business
-      entity = await businessService.getBusinessById(invoice.companyId);
+      entity = await businessService.getBusinessById(entityId);
       if (entity) {
         isCompany = false;
-        isOwner = await requireBusinessOwner(auth.context.userId, invoice.companyId);
+        isOwner = await requireBusinessOwner(auth.context.userId, entityId);
       }
     }
 

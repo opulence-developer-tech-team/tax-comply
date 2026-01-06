@@ -67,30 +67,7 @@ export async function GET(request: Request): Promise<NextResponse> {
       );
     }
 
-    // Check subscription plan for pitRemittance feature
-    const subscription = await subscriptionService.getSubscription(userId);
-    const plan = subscription?.plan || SubscriptionPlan.Free;
-    const planFeatures = SUBSCRIPTION_PRICING[plan]?.features;
-
-    if (!planFeatures?.pitRemittance) {
-      const currentPlan = plan.toLowerCase();
-      return NextResponse.json(
-        {
-          message: MessageResponse.Error,
-          description: "PIT remittance tracking is available on Starter plan (₦3,500/month) and above. Upgrade to track your PIT remittances.",
-          data: {
-            upgradeRequired: {
-              feature: "PIT Remittance Tracking",
-              currentPlan,
-              requiredPlan: "starter",
-              requiredPlanPrice: SUBSCRIPTION_PRICING[SubscriptionPlan.Starter].monthly,
-              reason: "plan_limitation",
-            },
-          },
-        },
-        { status: 403 }
-      );
-    }
+    // Subscription check removed as per user request (handled in write operations)
 
     // If taxYear is provided, get remittances for that year
     if (taxYearParam) {

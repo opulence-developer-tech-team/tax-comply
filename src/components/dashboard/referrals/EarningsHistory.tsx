@@ -41,7 +41,7 @@ export function EarningsHistory({ earnings, pagination, onPageChange }: Earnings
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="p-6">
+      <Card className="p-0 md:p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-slate-900">Earnings History</h2>
           {pagination.total > 0 && (

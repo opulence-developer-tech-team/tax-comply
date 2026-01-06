@@ -25,7 +25,7 @@ const steps = [
     icon: Calculator,
     step: "Step 03",
     title: "See Your Tax",
-    description: "We instantly calculate VAT, CIT, and PAYE for you.",
+    description: "We instantly calculate VAT, WHT ,Income Tax, and PAYE for you.",
   },
   {
     icon: CheckCircle,

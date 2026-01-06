@@ -4,7 +4,7 @@ import Invoice from "./entity";
 import { IInvoice, ICreateInvoice, IInvoiceItem } from "./interface";
 import { InvoiceStatus, AccountType, TransactionType, TaxClassification } from "../utils/enum";
 import { calculateVAT, calculateTotalWithVAT, getTaxYear, VATExemptionCategory, calculateWHT, calculateNetAfterWHT, getWHTRate, WHTType } from "../tax/calculator";
-import { NRS_VAT_RATE, NRS_CIT_SMALL_COMPANY_THRESHOLD_2026, NRS_VAT_TURNOVER_THRESHOLD_2026, NRS_WHT_EXEMPTION_THRESHOLD_2026 } from "../../constants/nrs-constants";
+import { NRS_VAT_RATE, NRS_VAT_TURNOVER_THRESHOLD_2026, NRS_WHT_EXEMPTION_THRESHOLD_2026 } from "../../constants/nrs-constants";
 // VATRecord import removed - VAT is now calculated on-the-fly from invoices/expenses
 import { vatService } from "../vat/service";
 import { logger } from "../utils/logger";
@@ -48,12 +48,15 @@ async function fetchEntity(entityId: Types.ObjectId, accountType?: AccountType):
 }
 
 class InvoiceService {
-  async generateInvoiceNumber(companyId: Types.ObjectId): Promise<string> {
+  async generateInvoiceNumber(entityId: Types.ObjectId): Promise<string> {
     const today = new Date();
     const datePrefix = `INV-${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
 
     const lastInvoice = await Invoice.findOne({
-      companyId,
+      $or: [
+        { companyId: entityId },
+        { businessId: entityId }
+      ],
       invoiceNumber: { $regex: `^${datePrefix}` },
     }).sort({ invoiceNumber: -1 });
 
@@ -153,7 +156,11 @@ class InvoiceService {
         const result = await Invoice.aggregate([
           { 
             $match: { 
-              companyId: new Types.ObjectId(invoiceData.companyId), // For Business, companyId field holds businessId
+              // Support both businessId and legacy companyId usage for businesses
+              $or: [
+                { businessId: new Types.ObjectId(invoiceData.companyId) },
+                { companyId: new Types.ObjectId(invoiceData.companyId) }
+              ],
               status: InvoiceStatus.Paid,
               issueDate: { $gte: startOfYear, $lte: endOfYear }
             } 
@@ -311,8 +318,16 @@ class InvoiceService {
 
     const invoiceNumber = await this.generateInvoiceNumber(invoiceData.companyId);
 
+    // CRITICAL: Determine correct ID fields based on account type
+    const isBusiness = accountType === AccountType.Business;
+
     const invoice = new Invoice({
       ...invoiceData,
+      // For Business: map input companyId -> businessId, clear companyId
+      // For Company: keep companyId as is
+      businessId: isBusiness ? invoiceData.companyId : undefined,
+      companyId: isBusiness ? undefined : invoiceData.companyId,
+
       items: itemsWithAmounts,
       invoiceNumber,
       subtotal: Math.round(subtotal * 100) / 100,
@@ -421,28 +436,34 @@ class InvoiceService {
         let entityAccountType: AccountType;
         
         // Use accountType parameter if available, otherwise determine from entity lookup
+        // Resolve entity ID first
+        const entityId = invoice.companyId || invoice.businessId;
+        if (!entityId) {
+             throw new Error(`Invoice has no associated entity ID for WHT creation. Invoice: ${invoice.invoiceNumber}`);
+        }
+
         if (accountType) {
           entityAccountType = accountType;
           if (accountType === AccountType.Business) {
-            entity = await Business.findById(invoice.companyId).lean();
+            entity = await Business.findById(entityId).lean();
             if (!entity) {
-              throw new Error(`Business not found for WHT record creation. ID: ${invoice.companyId.toString()}`);
+              throw new Error(`Business not found for WHT record creation. ID: ${entityId.toString()}`);
             }
           } else {
-            entity = await Company.findById(invoice.companyId).lean();
+            entity = await Company.findById(entityId).lean();
             if (!entity) {
-              throw new Error(`Company not found for WHT record creation. ID: ${invoice.companyId.toString()}`);
+              throw new Error(`Company not found for WHT record creation. ID: ${entityId.toString()}`);
             }
           }
         } else {
           // Fallback: Try Company first, then Business (backward compatibility)
-          entity = await Company.findById(invoice.companyId).lean();
+          entity = await Company.findById(entityId).lean();
           if (entity) {
             entityAccountType = AccountType.Company;
           } else {
-            entity = await Business.findById(invoice.companyId).lean();
+            entity = await Business.findById(entityId).lean();
             if (!entity) {
-              throw new Error(`Entity (Company or Business) not found for WHT record creation. ID: ${invoice.companyId.toString()}`);
+              throw new Error(`Entity (Company or Business) not found for WHT record creation. ID: ${entityId.toString()}`);
             }
             entityAccountType = AccountType.Business;
           }
@@ -450,7 +471,7 @@ class InvoiceService {
 
         // Company/Business TIN is required for WHT credit tracking (NRS compliance)
         if (!entity.tin || !entity.tin.trim()) {
-          throw new Error(`TIN is required for WHT record creation (NRS compliance). Entity ID: ${invoice.companyId.toString()}`);
+          throw new Error(`TIN is required for WHT record creation (NRS compliance). Entity ID: ${entityId.toString()}`);
         }
 
         const payeeName = entity.name;
@@ -467,7 +488,7 @@ class InvoiceService {
         }
 
         await whtService.createWHTRecord({
-          companyId: invoice.companyId,
+          companyId: entityId,
           accountId: companyAccountId,
           accountType: entityAccountType,
           transactionType: TransactionType.Invoice,
@@ -682,7 +703,7 @@ class InvoiceService {
   }
 
   async getCompanyInvoices(
-    companyId: Types.ObjectId,
+    entityId: Types.ObjectId, // Can be CompanyId or BusinessId
     filters?: {
       status?: InvoiceStatus;
       startDate?: Date;
@@ -694,7 +715,14 @@ class InvoiceService {
       skip?: number;
     }
   ): Promise<{ invoices: IInvoice[]; total: number }> {
-    const query: any = { companyId };
+    // CRITICAL: Support both Company and Business entities
+    // Search for invoices where EITHER companyId matches OR businessId matches
+    const query: any = {
+      $or: [
+        { companyId: entityId },
+        { businessId: entityId }
+      ]
+    };
 
     if (filters?.status) {
       query.status = filters.status;
@@ -712,7 +740,7 @@ class InvoiceService {
       );
       
       logger.info("Applying search filter", {
-        companyId: companyId.toString(),
+        companyId: entityId.toString(),
         searchTerm: filters.search,
         searchRegex: searchRegex.toString(),
       });
@@ -778,18 +806,30 @@ class InvoiceService {
     }
 
     // First, check total invoices without date filter for debugging
-    const totalWithoutDateFilter = await Invoice.countDocuments({ companyId });
+    const countQuery = {
+      $or: [
+        { companyId: entityId },
+        { businessId: entityId }
+      ]
+    };
+    const totalWithoutDateFilter = await Invoice.countDocuments(countQuery);
     
     // DIAGNOSTIC: Check if ANY invoices exist in the database (for debugging)
     const totalInvoicesAnywhere = await Invoice.countDocuments({});
     const sampleInvoicesAnywhere = await Invoice.find({})
       .sort({ issueDate: -1 })
       .limit(5)
-      .select("companyId issueDate invoiceNumber status")
+      .select("companyId businessId issueDate invoiceNumber status")
       .lean();
     
     // ALWAYS get sample invoices to see what exists (for debugging)
-    const sampleInvoices = await Invoice.find({ companyId })
+    const sampleQuery = {
+      $or: [
+        { companyId: entityId },
+        { businessId: entityId }
+      ]
+    };
+    const sampleInvoices = await Invoice.find(sampleQuery)
       .sort({ issueDate: -1 })
       .limit(10)
       .select("issueDate invoiceNumber status")
@@ -811,12 +851,13 @@ class InvoiceService {
     
     // Log diagnostic info if no invoices found for this company
     if (totalWithoutDateFilter === 0) {
-      logger.warn("⚠️ No invoices found for this company", {
-        companyId: companyId.toString(),
-        totalInvoicesForThisCompany: totalWithoutDateFilter,
+      logger.warn("⚠️ No invoices found for this entity", {
+        entityId: entityId.toString(),
+        totalInvoicesForThisEntity: totalWithoutDateFilter,
         totalInvoicesInEntireDatabase: totalInvoicesAnywhere,
         sampleInvoicesFromOtherCompanies: sampleInvoicesAnywhere.map((inv: any) => ({
           companyId: inv.companyId?.toString(),
+          businessId: inv.businessId?.toString(),
           invoiceNumber: inv.invoiceNumber,
           issueDate: inv.issueDate?.toISOString(),
         })),
@@ -842,8 +883,8 @@ class InvoiceService {
     }
 
     logger.info("Invoice query", {
-      companyId: companyId.toString(),
-      totalInvoicesForCompany: totalWithoutDateFilter,
+      entityId: entityId.toString(),
+      totalInvoicesForEntity: totalWithoutDateFilter,
       sampleInvoicesCount: sampleInvoices.length,
       yearsInDatabase: yearsInDatabase,
       uniqueYears: [...new Set(yearsInDatabase.map((y: any) => y.year))],
@@ -861,7 +902,7 @@ class InvoiceService {
 
     // Log the exact query being executed
     logger.info("Executing MongoDB query", {
-      companyId: companyId.toString(),
+      entityId: entityId.toString(),
       query: JSON.stringify(query, null, 2),
     });
 
@@ -873,7 +914,7 @@ class InvoiceService {
 
     // Log results
     logger.info("Query results", {
-      companyId: companyId.toString(),
+      entityId: entityId.toString(),
       totalMatches: total,
       invoicesReturned: invoices.length,
       hasYearFilter: !!filters?.year,
@@ -884,14 +925,14 @@ class InvoiceService {
     // Log sample invoice dates for debugging
     if (invoices.length > 0) {
       logger.info("Sample invoice dates from results", {
-        companyId: companyId.toString(),
+        entityId: entityId.toString(),
         firstInvoiceDate: invoices[0].issueDate?.toISOString(),
         lastInvoiceDate: invoices[invoices.length - 1].issueDate?.toISOString(),
       });
     } else if (totalWithoutDateFilter > 0 && (filters?.year || filters?.startDate || filters?.endDate)) {
       // If there are invoices but none match the filter, analyze why
       logger.warn("⚠️ No invoices match date filter, but invoices exist", {
-        companyId: companyId.toString(),
+        entityId: entityId.toString(),
         totalInvoices: totalWithoutDateFilter,
         sampleInvoiceDates: sampleInvoices.map((inv: any) => {
           const invDate = new Date(inv.issueDate);
@@ -924,7 +965,7 @@ class InvoiceService {
     }
 
     logger.info("Invoice query results", {
-      companyId: companyId.toString(),
+      entityId: entityId.toString(),
       total,
       found: invoices.length,
       queryHadDateFilter: !!query.issueDate,
@@ -1219,7 +1260,12 @@ class InvoiceService {
           const year = issueDate.getFullYear();
 
           // Recalculate VAT summary for the affected period (removes invoice from calculation)
-          await vatService.updateVATSummary(invoice.companyId, month, year, accountType);
+          const entityId = invoice.companyId || invoice.businessId;
+          if (entityId) {
+             await vatService.updateVATSummary(entityId, month, year, accountType);
+          } else {
+             logger.warn("Skipping VAT summary update - missing entity ID", { invoiceId: invoiceId.toString() });
+          }
           
           logger.info("VAT summary updated - invoice status changed from Paid (on-the-fly calculation)", {
             invoiceId: invoiceId.toString(),
@@ -1251,11 +1297,14 @@ class InvoiceService {
     // NRS Rule: WHT is deducted upon payment/settlement, not when invoice is created
     // Therefore: WHT records should exist ONLY for paid invoices
     
+    // Resolve entity ID
+    const entityId = invoice.companyId || invoice.businessId;
+
     // Find existing WHT record (if any)
     const existingWHTRecord = await whtService.findWHTRecordByTransaction(
       invoiceId,
       TransactionType.Invoice,
-      invoice.companyId
+      entityId! // entityId should exist if invoice exists, asserting non-null or handling properly elsewhere
     );
     
     // Case 1: Status changed FROM "Paid" to something else (Pending/Cancelled)
@@ -1269,7 +1318,7 @@ class InvoiceService {
         await whtService.deleteWHTRecordByTransaction(
           invoiceId,
           TransactionType.Invoice,
-          invoice.companyId
+          entityId!
         );
         logger.info("WHT record deleted - invoice status changed from Paid", {
           invoiceId: invoiceId.toString(),
@@ -1301,10 +1350,11 @@ class InvoiceService {
     // CRITICAL: If WHT type is empty, delete WHT record if it exists (similar to VAT exemption)
     if (!hasWHTType && existingWHTRecord) {
       try {
+        const entityId = invoice.companyId || invoice.businessId;
         await whtService.deleteWHTRecordByTransaction(
           invoiceId,
           TransactionType.Invoice,
-          invoice.companyId
+          entityId!
         );
         logger.info("WHT record deleted - WHT type is empty (No WHT selected)", {
           invoiceId: invoiceId.toString(),
@@ -1332,29 +1382,35 @@ class InvoiceService {
         let entity: any = null;
         let entityAccountType: AccountType;
         
+        // Resolve entity ID
+        const entityId = updatedInvoice.companyId || updatedInvoice.businessId;
+        if (!entityId) {
+             throw new Error(`Invoice has no associated entity ID for WHT creation. Invoice: ${updatedInvoice.invoiceNumber}`);
+        }
+
         // Use accountType parameter if available, otherwise determine from entity lookup
         if (accountType) {
           entityAccountType = accountType;
           if (accountType === AccountType.Business) {
-            entity = await Business.findById(updatedInvoice.companyId).lean();
+            entity = await Business.findById(entityId).lean();
             if (!entity) {
-              throw new Error(`Business not found for WHT record creation. ID: ${updatedInvoice.companyId.toString()}`);
+              throw new Error(`Business not found for WHT record creation. ID: ${entityId.toString()}`);
             }
           } else {
-            entity = await Company.findById(updatedInvoice.companyId).lean();
+            entity = await Company.findById(entityId).lean();
             if (!entity) {
-              throw new Error(`Company not found for WHT record creation. ID: ${updatedInvoice.companyId.toString()}`);
+              throw new Error(`Company not found for WHT record creation. ID: ${entityId.toString()}`);
             }
           }
         } else {
           // Fallback: Try Company first, then Business (backward compatibility)
-          entity = await Company.findById(updatedInvoice.companyId).lean();
+          entity = await Company.findById(entityId).lean();
           if (entity) {
             entityAccountType = AccountType.Company;
           } else {
-            entity = await Business.findById(updatedInvoice.companyId).lean();
+            entity = await Business.findById(entityId).lean();
             if (!entity) {
-              throw new Error(`Entity (Company or Business) not found for WHT record creation. ID: ${updatedInvoice.companyId.toString()}`);
+              throw new Error(`Entity (Company or Business) not found for WHT record creation. ID: ${entityId.toString()}`);
             }
             entityAccountType = AccountType.Business;
           }
@@ -1365,7 +1421,7 @@ class InvoiceService {
         // Therefore, YOUR COMPANY/BUSINESS is the payee (receives WHT credit), NOT the customer
         // Company/Business TIN is required for WHT credit tracking (NRS compliance)
         if (!entity.tin || !entity.tin.trim()) {
-          throw new Error(`TIN is required for WHT record creation (NRS compliance). Entity ID: ${updatedInvoice.companyId.toString()}`);
+          throw new Error(`TIN is required for WHT record creation (NRS compliance). Entity ID: ${entityId.toString()}`);
         }
         const payeeName = entity.name;
         const payeeTIN = entity.tin;
@@ -1380,7 +1436,7 @@ class InvoiceService {
         }
 
         await whtService.createWHTRecord({
-          companyId: updatedInvoice.companyId,
+          companyId: entityId,
           accountId: companyAccountId,
           accountType: entityAccountType,
           transactionType: TransactionType.Invoice,
@@ -1440,7 +1496,12 @@ class InvoiceService {
     
     // CRITICAL: Verify VAT Eligibility if charging VAT (Turnover >= 25M OR has VAT Registration Number)
     if (!isVATExempted) {
-      const company = await fetchEntity(existingInvoice.companyId, accountType);
+      const entityId = existingInvoice.companyId || existingInvoice.businessId;
+      if (!entityId) {
+        throw new Error(`Invoice ${existingInvoice._id} has no linked entity (Company/Business)`);
+      }
+      
+      const company = await fetchEntity(entityId, accountType);
       const vatRegistrationNumber = company.vatRegistrationNumber;
       
       // Calculate turnover to check eligibility if no VRN
@@ -1457,13 +1518,14 @@ class InvoiceService {
         try {
           const { companyService } = await import("../company/service");
           // Calculate annualized turnover based on actual paid invoices
-          annualTurnover = await companyService.calculateAnnualTurnover(existingInvoice.companyId, taxYear);
+          // CRITICAL: Use validated entityId
+          annualTurnover = await companyService.calculateAnnualTurnover(entityId, taxYear);
           
           // Check if turnover is below the VAT/WHT exemption threshold (25M)
           isSmallCompany = annualTurnover <= NRS_WHT_EXEMPTION_THRESHOLD_2026;
           
           console.log("[INVOICE_UPDATE] VAT Eligibility Check (Company):", {
-             companyId: existingInvoice.companyId,
+             companyId: entityId,
              annualTurnover, 
              threshold: NRS_WHT_EXEMPTION_THRESHOLD_2026,
              isSmallCompany,
@@ -1606,6 +1668,12 @@ class InvoiceService {
     const totalChanged = totals.total !== existingInvoice.total;
     const whtTypeChanged = updateData.whtType !== undefined && updateData.whtType !== existingInvoice.whtType;
 
+    // CRITICAL: Check for legacy invalid state (WhtType present but Amount is 0)
+    // This happens with legacy data or if exemptions were applied previously. 
+    // We MUST force recalculation to either fix the amount or clear the type.
+    // Use !!whtType to ensure boolean result (whtType can be string/enum)
+    const hasInvalidWhtState = !!whtType && (existingInvoice.whtAmount ?? 0) <= 0;
+
     // DEBUG: Log WHT calculation state
     logger.info("WHT calculation state before recalculation", {
       invoiceId: invoiceId.toString(),
@@ -1615,12 +1683,18 @@ class InvoiceService {
       existingWhtRate: existingInvoice.whtRate ?? 0,
       totalChanged,
       whtTypeChanged,
-      willRecalculate: whtType && (totalChanged || whtTypeChanged),
+      hasInvalidWhtState,
+      willRecalculate: !!whtType && (totalChanged || whtTypeChanged || hasInvalidWhtState),
     });
     
-    if (whtType && (totalChanged || whtTypeChanged)) {
+    if (!!whtType && (totalChanged || whtTypeChanged || hasInvalidWhtState)) {
       // CRITICAL: Fetch entity (Company or Business) based on account type
-      const company = await fetchEntity(existingInvoice.companyId, accountType);
+      const entityId = existingInvoice.companyId || existingInvoice.businessId;
+      if (!entityId) {
+        throw new Error(`Invoice ${existingInvoice._id} has no linked entity (Company/Business)`);
+      }
+
+      const company = await fetchEntity(entityId, accountType);
       
       const taxYear = getTaxYear();
 
@@ -1633,7 +1707,8 @@ class InvoiceService {
         // Calculate turnover from invoices for Company accounts
         try {
           const { companyService } = await import("../company/service");
-          const annualTurnover = await companyService.calculateAnnualTurnover(existingInvoice.companyId, taxYear);
+          // CRITICAL: Use validated entityId
+          const annualTurnover = await companyService.calculateAnnualTurnover(entityId, taxYear);
           
           // CRITICAL: CIT Small Company Definition is <= 50M (Act 2025)
           // We keep this for classification purposes if needed
@@ -1645,7 +1720,7 @@ class InvoiceService {
         } catch (error) {
           // If calculation fails, assume not small company (safer assumption)
           logger.warn("Failed to calculate annual turnover for WHT exemption check (invoice update)", {
-            companyId: existingInvoice.companyId.toString(),
+            companyId: entityId.toString(),
             error: error instanceof Error ? error.message : String(error),
           });
           isSmallCompany = false;
@@ -1659,7 +1734,11 @@ class InvoiceService {
           const result = await Invoice.aggregate([
             { 
               $match: { 
-                companyId: new Types.ObjectId(existingInvoice.companyId),
+                // CRITICAL: Match on companyId OR businessId using the entityId we found
+                $or: [
+                  { companyId: entityId },
+                  { businessId: entityId }
+                ],
                 status: InvoiceStatus.Paid,
                 issueDate: { $gte: startOfYear, $lte: endOfYear }
               } 
@@ -1678,14 +1757,14 @@ class InvoiceService {
           isSmallCompany = annualTurnover <= NRS_WHT_EXEMPTION_THRESHOLD_2026;
           
           logger.info("Computed annual turnover for Business WHT check (Update)", {
-            businessId: existingInvoice.companyId.toString(),
+            businessId: entityId.toString(),
             annualTurnover,
             isSmallBusiness: isSmallCompany,
             threshold: NRS_WHT_EXEMPTION_THRESHOLD_2026
           });
         } catch (error) {
           logger.warn("Failed to calculate annual turnover for Business WHT check (Update)", {
-            businessId: existingInvoice.companyId.toString(),
+            businessId: entityId.toString(),
             error: error instanceof Error ? error.message : String(error),
           });
           isSmallCompany = false;
@@ -2056,11 +2135,14 @@ class InvoiceService {
     // It checks: updateData.whtType !== undefined && updateData.whtType !== existingInvoice.whtType
     // This is sufficient for WHT record handling as well
     
+    // Resolve existing entity ID
+    const existingEntityId = existingInvoice.companyId || existingInvoice.businessId;
+
     // Find existing WHT record (if any)
     const existingWHTRecord = await whtService.findWHTRecordByTransaction(
       invoiceId,
       TransactionType.Invoice,
-      existingInvoice.companyId
+      existingEntityId!
     );
     
     logger.info("Invoice update - checking WHT record creation/deletion", {
@@ -2082,7 +2164,7 @@ class InvoiceService {
           await whtService.deleteWHTRecordByTransaction(
             invoiceId,
             TransactionType.Invoice,
-            existingInvoice.companyId
+            existingEntityId!
           );
           
           logger.info("✅ WHT record deleted - WHT type removed (empty string)", {
@@ -2127,7 +2209,7 @@ class InvoiceService {
             await whtService.deleteWHTRecordByTransaction(
               invoiceId,
               TransactionType.Invoice,
-              existingInvoice.companyId
+              existingEntityId!
             );
             logger.info("✅ WHT record deleted - invoice status is not Paid (WHT type exists but status changed to non-Paid)", {
               invoiceId: invoiceId.toString(),
@@ -2222,7 +2304,7 @@ class InvoiceService {
             await whtService.deleteWHTRecordByTransaction(
               invoiceId,
               TransactionType.Invoice,
-              existingInvoice.companyId
+              existingEntityId!
             );
             logger.info("Old WHT record deleted - will create new one with updated values", {
               invoiceId: invoiceId.toString(),
@@ -2252,29 +2334,35 @@ class InvoiceService {
             let entity: any = null;
             let entityAccountType: AccountType;
             
+            // Resolve updated entity ID
+            const updatedEntityId = updatedInvoice.companyId || updatedInvoice.businessId;
+            if (!updatedEntityId) {
+                throw new Error(`Invoice has no associated entity ID for WHT creation. Invoice: ${updatedInvoice.invoiceNumber}`);
+            }
+
             // Use accountType parameter if available, otherwise determine from entity lookup
             if (accountType) {
               entityAccountType = accountType;
               if (accountType === AccountType.Business) {
-                entity = await Business.findById(updatedInvoice.companyId).lean();
+                entity = await Business.findById(updatedEntityId).lean();
                 if (!entity) {
-                  throw new Error(`Business not found for WHT record creation. ID: ${updatedInvoice.companyId.toString()}`);
+                  throw new Error(`Business not found for WHT record creation. ID: ${updatedEntityId.toString()}`);
                 }
               } else {
-                entity = await Company.findById(updatedInvoice.companyId).lean();
+                entity = await Company.findById(updatedEntityId).lean();
                 if (!entity) {
-                  throw new Error(`Company not found for WHT record creation. ID: ${updatedInvoice.companyId.toString()}`);
+                  throw new Error(`Company not found for WHT record creation. ID: ${updatedEntityId.toString()}`);
                 }
               }
             } else {
               // Fallback: Try Company first, then Business (backward compatibility)
-              entity = await Company.findById(updatedInvoice.companyId).lean();
+              entity = await Company.findById(updatedEntityId).lean();
               if (entity) {
                 entityAccountType = AccountType.Company;
               } else {
-                entity = await Business.findById(updatedInvoice.companyId).lean();
+                entity = await Business.findById(updatedEntityId).lean();
                 if (!entity) {
-                  throw new Error(`Entity (Company or Business) not found for WHT record creation. ID: ${updatedInvoice.companyId.toString()}`);
+                  throw new Error(`Entity (Company or Business) not found for WHT record creation. ID: ${updatedEntityId.toString()}`);
                 }
                 entityAccountType = AccountType.Business;
               }
@@ -2282,7 +2370,7 @@ class InvoiceService {
 
             // Company/Business TIN is required for WHT credit tracking (NRS compliance)
             if (!entity.tin || !entity.tin.trim()) {
-              throw new Error(`TIN is required for WHT record creation (NRS compliance). Entity ID: ${updatedInvoice.companyId.toString()}`);
+              throw new Error(`TIN is required for WHT record creation (NRS compliance). Entity ID: ${updatedEntityId.toString()}`);
             }
 
             const payeeName = entity.name;
@@ -2295,7 +2383,7 @@ class InvoiceService {
             }
 
             await whtService.createWHTRecord({
-              companyId: updatedInvoice.companyId,
+              companyId: updatedEntityId,
               accountId: companyAccountId,
               accountType: entityAccountType,
               transactionType: TransactionType.Invoice,

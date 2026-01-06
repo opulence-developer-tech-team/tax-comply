@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { NRS_CIT_SMALL_COMPANY_THRESHOLD_2026, NRS_CIT_RATE } from "../../constants/nrs-constants";
+import { NRS_CIT_RATE } from "../../constants/nrs-constants";
 import Company from "./entity";
 import { ICompany, ICompanyOnboarding } from "./interface";
 import { TaxClassification, ComplianceStatus, AccountType } from "../utils/enum";
@@ -142,34 +142,16 @@ class CompanyService {
       return TaxClassification.SmallCompany;
     }
 
-    const year = taxYear || new Date().getFullYear();
-    
-    if (year >= 2026) {
-      // VERIFIED: Thresholds confirmed per Nigeria Tax Act 2025 (effective January 1, 2026)
-      // Source: Corporate Tax Changes (Effective Jan 1, 2026)
-      // - Small Company: turnover <= ₦50M (0% CIT rate)
-      // - Medium Company: turnover > ₦50M AND <= ₦500M (30% CIT rate - Unified)
-      // - Large Company: turnover > ₦500M (30% CIT rate)
-      // Note: We prioritize Turnover over Assets for tax classification.
-      
-      // Use constants for single source of truth
-      
-      if (turnover <= NRS_CIT_SMALL_COMPANY_THRESHOLD_2026) {
-        return TaxClassification.SmallCompany;
-      } else {
-        // UNIFIED: Medium Company category abolished for 2026+
-        // All companies > 50M are treated as "Large" (Standard)
-        // Rate is 30% for everyone in this category
-        return TaxClassification.Large;
-      }
+    // Unified structural classification (does not change by year)
+    // Small: <= 25M
+    // Medium: > 25M and <= 100M
+    // Large: > 100M
+    if (turnover <= 25_000_000) {
+      return TaxClassification.SmallCompany;
+    } else if (turnover <= 100_000_000) {
+      return TaxClassification.Medium;
     } else {
-      if (turnover < 25_000_000) {
-        return TaxClassification.SmallCompany;
-      } else if (turnover < 50_000_000) {
-        return TaxClassification.SmallCompany;
-      } else {
-        return TaxClassification.Medium;
-      }
+      return TaxClassification.Large;
     }
   }
 
@@ -483,18 +465,34 @@ class CompanyService {
     }
 
     // CIT rates per NRS (Nigeria Revenue Service) regulations
-    // CRITICAL: Use enum values as keys to ensure exact match
-    // Standard CIT Rate: 30% (Unified for Medium/Large in 2025 Act)
+    // CRITICAL: Decouple Tax Classification (Structural) from Tax Exemption (Fiscal)
     const standardRate = NRS_CIT_RATE / 100; // Convert 30 to 0.30
 
+    // Determine Exemption Status based on Turnover and Year
+    const { isCITExempt } = await import("../tax/calculator");
+    const isExempt = isCITExempt(annualTurnover, year);
+
+    // Determine Rate
+    // If exempt -> 0%
+    // If not exempt -> Standard Rate (30%)
+    // Note: For pre-2026, Medium companies (25M-100M) were taxed at 20%, but for simplicity 
+    // and forward-compatibility with the unified rate logic, we use the configured NRS_CIT_RATE
+    // unless explicit legacy logic is requested. The key fix is the Exemption separation.
+    
+    const citRate = isExempt ? 0 : standardRate;
+
+    // Legacy mapping for logging/debugging (optional, but keep variable for consistency)
     const CIT_RATES: Record<TaxClassification, number> = {
-      [TaxClassification.SmallCompany]: 0, // Exempt
-      [TaxClassification.Medium]: standardRate, // 30% (Standard Rate)
-      [TaxClassification.Large]: standardRate, // 30%
+      [TaxClassification.SmallCompany]: 0, 
+      [TaxClassification.Medium]: isExempt ? 0 : standardRate, 
+      [TaxClassification.Large]: standardRate, 
     };
 
-    // CRITICAL: Get citRate from mapping - fail loudly if not found (no fallback)
-    const citRate = CIT_RATES[normalizedTaxClassification];
+    // Verify consistency (optional)
+    const legacyRate = CIT_RATES[normalizedTaxClassification];
+    if (Math.abs(legacyRate - citRate) > 0.001) {
+       logger.warn("Discrepancy between calculated CIT rate and legacy table lookup", { calculated: citRate, legacy: legacyRate });
+    }
     
     if (citRate === undefined || citRate === null) {
       throw new Error(

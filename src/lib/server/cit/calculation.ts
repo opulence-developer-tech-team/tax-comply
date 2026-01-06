@@ -457,27 +457,43 @@ export async function calculateCITSummary(
     normalizedType: typeof normalizedTaxClassification,
   });
 
-  // CIT rates per NRS (Nigeria Revenue Service) regulations
-  // Reference: Nigeria Tax Act 2025 (effective January 1, 2026)
-  // CRITICAL: Use enum values as keys to ensure exact match
-  // Rates should be verified against the official tax policy document
+  // Determine Exemption Status based on Turnover and Year
+  // CRITICAL: Decouple Tax Classification (Structural) from Tax Exemption (Fiscal)
+  const { isCITExempt } = await import("../tax/calculator");
+  const isExempt = isCITExempt(annualTurnover, taxYear);
+  
+  // Determine Rate
+  // If exempt -> 0%
+  // If not exempt -> Standard Rate (30%)
+  const standardRate = NRS_CIT_RATE / 100;
+  const citRate = isExempt ? 0 : standardRate;
+
+  // Legacy mapping for logging/debugging (optional, but keep variable for consistency)
   const CIT_RATES: Record<TaxClassification, number> = {
-    [TaxClassification.SmallCompany]: 0, // 0% - Exempt per Nigeria Tax Act 2025
-    [TaxClassification.Medium]: NRS_CIT_RATE / 100, // 30% - Standard Rate (Harmonized 2026)
-    [TaxClassification.Large]: NRS_CIT_RATE / 100, // 30% - Per Nigeria Tax Act 2025
+    [TaxClassification.SmallCompany]: 0, 
+    [TaxClassification.Medium]: isExempt ? 0 : standardRate, 
+    [TaxClassification.Large]: standardRate, 
   };
 
-  console.log("[CIT_CALCULATION] CIT_RATES mapping:", {
-    CIT_RATES,
-    keys: Object.keys(CIT_RATES),
-    values: Object.values(CIT_RATES),
-    normalizedTaxClassification,
-    lookupKey: normalizedTaxClassification,
-    lookupValue: CIT_RATES[normalizedTaxClassification],
+  console.log("[CIT_CALCULATION] CIT Rate determined with Exemption Logic:", {
+    taxYear,
+    annualTurnover,
+    isExempt,
+    structuralClassification: normalizedTaxClassification,
+    citRate,
   });
 
-  // CRITICAL: Get citRate from mapping - fail loudly if not found
-  const citRate = CIT_RATES[normalizedTaxClassification];
+  // Verify consistency (optional)
+  const legacyRate = CIT_RATES[normalizedTaxClassification];
+  if (Math.abs(legacyRate - citRate) > 0.001) {
+      logger.warn("[CIT_CALCULATION] Discrepancy between calculated CIT rate and legacy table lookup", { calculated: citRate, legacy: legacyRate });
+  }
+
+  // CRITICAL: Get citRate from mapping - BUT we use our calculated citRate variable now.
+  // We keep CIT_RATES defined for legacy compatibility if logging needs it.
+  
+  // No longer dependent on map lookup for valid rate assignment.
+  // Proceed with validation of 'citRate' which is already a number.
   
   // CRITICAL: Validate citRate is defined - no fallback, fail loudly
   if (citRate === undefined || citRate === null) {

@@ -394,7 +394,7 @@ export default function ReferralsPage() {
 
   return (
     <RouteGuard requireAccountType={[AccountType.Company, AccountType.Individual, AccountType.Business]} redirectTo="/dashboard/expenses" loadingMessage="Loading referrals...">
-      <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gray-50 py-4 px-3 md:py-8 sm:px-6 lg:px-8">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -402,7 +402,7 @@ export default function ReferralsPage() {
           className="max-w-7xl mx-auto space-y-6"
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-             <ReferralHeader onRefresh={handleRefresh} />
+             <ReferralHeader />
              <Button 
                variant={ButtonVariant.Outline} 
                onClick={() => setIsGuideOpen(true)}
@@ -441,12 +441,12 @@ export default function ReferralsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="flex gap-4"
+            className="flex flex-col sm:flex-row gap-4"
           >
             <Button
               onClick={() => setShowBankDetailsModal(true)}
               variant={ButtonVariant.Outline}
-              className="flex items-center gap-2"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto"
             >
               <Plus className="w-4 h-4" />
               {bankDetails.length > 0 ? "Update Bank Details" : "Add Bank Details"}
@@ -462,7 +462,7 @@ export default function ReferralsPage() {
                 setShowWithdrawModal(true);
               }}
               disabled={summaryData.availableBalance < 1000 || bankDetails.length === 0}
-              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700"
             >
               <ArrowRight className="w-4 h-4" />
               Withdraw Earnings

@@ -89,12 +89,12 @@ export function ComplianceStatusCard({ complianceStatus, accountType }: Complian
         subtitle={`Last checked: ${formatDate(new Date())} - This is an internal assessment tool, not an official NRS (Nigeria Revenue Service) compliance status`}
       >
         <div className="space-y-6">
-          <div className="flex items-center space-x-6">
+          <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
             <motion.div
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2 }}
-              className={`px-6 py-3 rounded-xl border-2 font-bold text-sm ${getStatusColor(
+              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-xl border-2 font-bold text-xs sm:text-sm whitespace-nowrap ${getStatusColor(
                 complianceStatus.status
               )}`}
             >

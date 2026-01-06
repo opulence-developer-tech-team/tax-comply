@@ -1075,31 +1075,32 @@ export function InvoiceFormModal({
                             Exempt this invoice from VAT (for VAT-exempt goods/services only)
                           </label>
                           <div className="mt-2 space-y-2">
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                              <p className="text-sm font-semibold text-blue-900 mb-2">
-                                ℹ️ Default Behavior (Unchecked):
+                            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+                              <p className="text-sm font-semibold text-emerald-900 mb-2">
+                                ✅ Default: VAT Exempt (Checked)
                               </p>
-                              <p className="text-sm text-blue-800">
-                                <strong>VAT will be automatically calculated and added</strong> to your invoice at the standard rate (7.5%). 
-                                This is the default for most invoices. You don't need to do anything.
+                              <p className="text-sm text-emerald-800">
+                                By default, <strong>No VAT</strong> is charged. This is correct for businesses earning <strong>less than ₦25 million/year</strong>.
+                              </p>
+                              <p className="text-sm text-emerald-800 mt-2">
+                                <strong>To Charge VAT:</strong> Uncheck the box above.
                               </p>
                             </div>
                             
                             <p className="text-sm text-slate-700 mt-3">
-                              <strong className="text-slate-900">Only check this box if:</strong>
+                              <strong className="text-slate-900">Leave this box CHECKED (Exempt) if:</strong>
                             </p>
                             <ul className="text-sm text-slate-600 space-y-1 ml-4 list-disc">
-                              <li>Your invoice is for <strong>VAT-exempt goods/services</strong> (Food, Healthcare, Education, Housing, Transportation, or Accommodation)</li>
-                              <li>Your business turnover is <strong>less than ₦25 million per year</strong> (exempt from VAT registration per Nigeria Tax Act 2025)</li>
+                              <li>Your business turnover is <strong>less than ₦25 million per year</strong> (You are NOT required to charge VAT)</li>
+                              <li>Your invoice is for <strong>VAT-exempt goods/services</strong> (Food, Medical, Books, etc.)</li>
                             </ul>
                             
                             <p className="text-sm text-slate-700 mt-3">
-                              <strong className="text-slate-900">Do NOT check this box if:</strong>
+                              <strong className="text-slate-900">UNCHECK this box (Charge VAT) if:</strong>
                             </p>
                             <ul className="text-sm text-slate-600 space-y-1 ml-4 list-disc">
-                              <li>Your business makes <strong>₦25 million</strong> or more per year AND this invoice is for <strong>taxable</strong> goods/services</li>
-                              <li>You are <strong>VAT-registered</strong> (≥ ₦25M turnover) - you MUST charge VAT on taxable supplies</li>
-                              <li>Your invoice is NOT for VAT-exempt goods/services (e.g. Consulting, Professional Services are taxable)</li>
+                              <li>Your business makes <strong>₦25 million+</strong> per year (You MUST charge VAT)</li>
+                              <li>You are already <strong>VAT Registered</strong> with FIRS</li>
                             </ul>
                             <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-800">
                               <p>
@@ -1237,18 +1238,18 @@ export function InvoiceFormModal({
             </p>
             
             {/* Tax Calculation Info - Dynamic based on Account Type */}
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100 border-2 border-amber-300 rounded-xl p-4 shadow-sm">
-              <p className="text-lg font-bold text-amber-900 mb-3 text-center">
-                📊 How Government Calculates Your Tax
+            <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-2 border-emerald-200 rounded-xl p-4 shadow-sm">
+              <p className="text-lg font-bold text-emerald-900 mb-3 text-center flex items-center justify-center gap-2">
+                <span className="text-2xl">📊</span> How Government Calculates Your Tax
               </p>
               
-              <div className="bg-white rounded-lg p-4 border border-amber-200 space-y-3">
+              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 border border-emerald-100 space-y-3">
                 <div className="space-y-2">
                   <p className="text-base font-semibold text-slate-900">
                     Step 1: Find Your Profit
                   </p>
-                  <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
-                    <p className="text-2xl font-bold text-emerald-700 text-center">
+                  <div className="bg-emerald-50/50 rounded-lg p-3 border border-emerald-100/50">
+                    <p className="text-xl md:text-2xl font-bold text-emerald-700 text-center">
                       Profit = Money You Made - Money You Spent
                     </p>
                   </div>
@@ -1261,8 +1262,8 @@ export function InvoiceFormModal({
                   <p className="text-base font-semibold text-slate-900">
                     Step 2: Calculate Your Tax
                   </p>
-                  <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
-                    <p className="text-2xl font-bold text-emerald-700 text-center">
+                  <div className="bg-emerald-50/50 rounded-lg p-3 border border-emerald-100/50">
+                    <p className="text-xl md:text-2xl font-bold text-emerald-700 text-center">
                       Tax = Profit × Tax Percentage
                     </p>
                   </div>
@@ -1278,81 +1279,96 @@ export function InvoiceFormModal({
                         <ul className="list-disc list-inside text-sm text-slate-600 mb-2">
                           <li><strong>Note:</strong> Small Companies (Turnover &lt; ₦25M) are generally exempt from suffering WHT deductions on valid invoices. Always verify TIN.</li>
                         </ul>
-                         <div className="p-2 bg-blue-50 rounded-md border border-blue-100">
-                          <p className="font-bold text-blue-900 mb-1">Company Income Tax (CIT)</p>
-                          <div className="space-y-2">
+                         <div className="p-3 bg-white rounded-xl border border-emerald-100 shadow-sm">
+                          <p className="font-bold text-emerald-900 mb-1 flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            Company Income Tax (CIT)
+                          </p>
+                          <div className="space-y-2 pl-4 border-l-2 border-emerald-100 ml-1">
                             <div>
-                              <p className="font-semibold text-sm">• Small Company: 0% (Tax Exempt)</p>
-                              <p className="text-xs text-slate-600">Turnover ≤ ₦50 million per year</p>
+                              <p className="font-semibold text-sm text-emerald-800">• Small Company: 0% (Tax Exempt)</p>
+                              <p className="text-xs text-slate-500">Turnover ≤ ₦50 million per year</p>
                             </div>
                             <div>
-                              <p className="font-semibold text-sm">• Large Company: 30%</p>
-                              <p className="text-xs text-slate-600">Turnover &gt; ₦50 million per year</p>
+                              <p className="font-semibold text-sm text-emerald-800">• Large Company: 30%</p>
+                              <p className="text-xs text-slate-500">Turnover &gt; ₦50 million per year</p>
                             </div>
                           </div>
                         </div>
                       </div>
                     ) : (
                       <div className="text-base text-slate-700 space-y-2 ml-2">
-                        <div className="p-2 bg-emerald-50 rounded-md border border-emerald-100">
-                          <p className="font-bold text-emerald-900 mb-1">Personal Income Tax (PIT)</p>
-                          <p className="text-xs text-slate-600 mb-2">Progressive rates for Business/Sole Proprietors (2026+):</p>
-                          <div className="space-y-1 text-sm">
-                            <div className="flex justify-between border-b border-emerald-100 pb-1">
-                              <span>First ₦800k Profit:</span>
-                              <span className="font-bold">0% (Exempt)</span>
+                        <div className="p-3 bg-white rounded-xl border border-emerald-100 shadow-sm">
+                          <p className="font-bold text-emerald-900 mb-1 flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            Personal Income Tax (PIT)
+                          </p>
+                          <p className="text-xs text-slate-500 mb-3 pl-1">Progressive rates for Business/Sole Proprietors (2026+):</p>
+                          <div className="space-y-2 text-sm pl-4 border-l-2 border-emerald-100 ml-1">
+                            <div className="flex justify-between border-b border-dashed border-emerald-100 pb-1">
+                              <span className="text-slate-600">First ₦800k Profit:</span>
+                              <span className="font-bold text-emerald-700">0% (Exempt)</span>
                             </div>
-                            <div className="flex justify-between border-b border-emerald-100 pb-1">
-                              <span>Next ₦2.2M (up to 3M):</span>
-                              <span className="font-bold">15%</span>
+                            <div className="flex justify-between border-b border-dashed border-emerald-100 pb-1">
+                              <span className="text-slate-600">Next ₦2.2M (up to 3M):</span>
+                              <span className="font-bold text-emerald-700">15%</span>
                             </div>
-                            <div className="flex justify-between border-b border-emerald-100 pb-1">
-                              <span>Next ₦9M (up to 12M):</span>
-                              <span className="font-bold">18%</span>
+                            <div className="flex justify-between border-b border-dashed border-emerald-100 pb-1">
+                              <span className="text-slate-600">Next ₦9M (up to 12M):</span>
+                              <span className="font-bold text-emerald-700">18%</span>
                             </div>
                             <div className="flex justify-between">
-                              <span>Above ₦50M:</span>
-                              <span className="font-bold">25%</span>
+                              <span className="text-slate-600">Above ₦50M:</span>
+                              <span className="font-bold text-emerald-700">25%</span>
                             </div>
                           </div>
                         </div>
                       </div>
                     )}
                     
-                    <p className="text-sm text-slate-600 mt-2 ml-2 italic">
+                    <p className="text-sm text-emerald-700/80 mt-3 ml-2 italic font-medium">
                       Note: Recording expenses lowers your profit, which lowers your tax.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-3 p-4 bg-amber-50 rounded-xl border border-amber-200">
-                <p className="text-lg font-bold text-amber-900 mb-2 flex items-center gap-2">
-                  <span className="text-xl">⚠️</span> Important Warning
+              <div className="mt-3 p-4 bg-emerald-900/5 rounded-xl border border-emerald-200">
+                <p className="text-lg font-bold text-emerald-900 mb-2 flex items-center gap-2">
+                  <span className="text-xl">💡</span> Smart Tip
                 </p>
-                <div className="text-base text-amber-900 space-y-2 leading-relaxed">
+                <div className="text-base text-emerald-900 space-y-2 leading-relaxed">
                   <p>
                     When you mark this as <strong>Paid</strong>, the government sees it as money you have made.
                   </p>
                   <p>
                     If you don't add your <strong>Expenses</strong> (money you spent) first, your tax will be too high!
                   </p>
-                  <p className="font-bold text-amber-800 mt-2">
+                  <p className="font-bold text-emerald-800 mt-2 p-2 bg-emerald-100/50 rounded-lg text-center">
                     Always record expenses BEFORE marking invoices as paid.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-3">
-              <p className="text-base font-semibold text-blue-900 mb-2">
-                ✅ What You Need To Do:
+            <div className="bg-white border-2 border-emerald-100 rounded-xl p-4 shadow-sm">
+              <p className="text-base font-bold text-emerald-900 mb-3 flex items-center gap-2">
+                 ✅ What You Need To Do:
               </p>
-              <div className="text-base text-blue-800 space-y-1.5 ml-2">
-                <p>1. Go to the <strong>Expenses</strong> page</p>
-                <p>2. Record all job-related expenses (materials, transport, etc.)</p>
-                <p>3. Mark as tax-deductible</p>
-                <p>4. Come back here and mark as "Paid"</p>
+              <div className="space-y-3">
+                {[
+                  "Go to the Expenses page",
+                  "Record all job-related expenses (materials, transport, etc.)",
+                  "Mark as tax-deductible",
+                  "Come back here and mark as 'Paid'"
+                ].map((step, idx) => (
+                  <div key={idx} className="flex items-center gap-3 text-emerald-800">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">
+                      {idx + 1}
+                    </span>
+                    <span className="text-base font-medium">{step}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -1360,7 +1376,7 @@ export function InvoiceFormModal({
         }
         confirmLabel="I've Recorded Expenses - Mark as Paid"
         cancelLabel="Cancel - Record Expenses First"
-        variant={ConfirmModalVariant.Warning}
+        variant={ConfirmModalVariant.Info}
         isLoading={false}
       />
     </>

@@ -71,7 +71,31 @@ export function TaxFilingGuideModal({ isOpen, onClose, accountType }: TaxFilingG
         </h3>
         
         <div className="bg-slate-50 rounded-xl border border-slate-200 divide-y divide-slate-100">
-            {isIndividual ? (
+            {/* Monthly Returns - For Business & Company */}
+            {!isIndividual && (
+                <div className="p-4 flex gap-4 items-start border-b border-slate-100">
+                    <Calendar className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                        <p className="font-bold text-slate-900 text-sm">Monthly Returns (VAT, PAYE, WHT)</p>
+                        <p className="text-slate-600 text-xs mt-1">
+                            Due by <strong>21st</strong> of the following month.
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* Annual Returns - Dynamic based on Company vs Business/Individual */}
+            {isCompany ? (
+                <div className="p-4 flex gap-4 items-start">
+                    <Building2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                        <p className="font-bold text-slate-900 text-sm">Company Income Tax (CIT)</p>
+                        <p className="text-slate-600 text-xs mt-1">
+                            Due by <strong>June 30th</strong> of the following year.
+                        </p>
+                    </div>
+                </div>
+            ) : (
                 <div className="p-4 flex gap-4 items-start">
                     <PersonStanding className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                     <div>
@@ -82,27 +106,6 @@ export function TaxFilingGuideModal({ isOpen, onClose, accountType }: TaxFilingG
                         </p>
                     </div>
                 </div>
-            ) : (
-                <>
-                <div className="p-4 flex gap-4 items-start">
-                    <Calendar className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                    <div>
-                        <p className="font-bold text-slate-900 text-sm">Monthly Returns (VAT, PAYE, WHT)</p>
-                        <p className="text-slate-600 text-xs mt-1">
-                            Due by <strong>21st</strong> of the following month.
-                        </p>
-                    </div>
-                </div>
-                <div className="p-4 flex gap-4 items-start">
-                    <Building2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                    <div>
-                        <p className="font-bold text-slate-900 text-sm">Company Income Tax (CIT)</p>
-                        <p className="text-slate-600 text-xs mt-1">
-                            Due by <strong>June 30th</strong> of the following year.
-                        </p>
-                    </div>
-                </div>
-                </>
             )}
         </div>
       </div>

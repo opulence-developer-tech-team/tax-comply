@@ -141,11 +141,11 @@ export default function SettingsPage() {
               transition={{ delay: 0.2 }}
               className="space-y-6"
             >
-              <div className="flex items-start space-x-4">
+              <div className="flex flex-col sm:flex-row items-start gap-4">
                 <div className={`w-12 h-12 bg-gradient-to-br ${accountConfig.bgColor} rounded-xl flex items-center justify-center flex-shrink-0`}>
                   <accountConfig.Icon className={`w-6 h-6 ${accountConfig.iconColor}`} />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 w-full">
                   <h3 className="font-semibold text-slate-900 mb-2">{accountConfig.title}</h3>
                   <p className="text-sm text-slate-600 mb-4">
                     {accountConfig.description}
@@ -154,7 +154,7 @@ export default function SettingsPage() {
                     <Button
                       variant={ButtonVariant.Outline}
                       onClick={() => router.push(accountConfig.href)}
-                      className={accountConfig.buttonClass}
+                      className={`${accountConfig.buttonClass} w-full sm:w-auto flex justify-center items-center`}
                     >
                       {accountConfig.buttonText}
                       <ArrowRight className="w-4 h-4 ml-2" />

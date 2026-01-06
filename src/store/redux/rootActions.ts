@@ -19,6 +19,9 @@ import { referralsActions } from "./referrals/referrals-slice";
 import { subscriptionActions } from "./subscription/subscription-slice";
 import { userActions } from "./user/user-slice";
 import { adminActions } from "./admin/admin-slice";
+import { pitActions } from "./pit/pit-slice";
+import { incomeActions } from "./income/income-slice";
+import { payrollActions } from "./payroll/payroll-slice";
 
 /**
  * Reset all Redux state slices (except user)
@@ -51,6 +54,14 @@ export const resetAllState = () => {
     dispatch(employeesActions.clearEmployees());
     dispatch(referralsActions.clearReferralData());
     dispatch(subscriptionActions.clearSubscription());
+    dispatch(pitActions.clearPIT());
+    dispatch(incomeActions.clearIncome());
+    dispatch(payrollActions.clearPayrollSchedules());
+    dispatch(citActions.clearCIT());
+    
+    // CRITICAL: Clear auth state last
+    dispatch(userActions.clearUser());
+    dispatch(adminActions.clearAdmin());
   };
 };
 
@@ -81,6 +92,10 @@ export const resetCompanyData = () => {
     dispatch(whtActions.clearWHT());
     dispatch(complianceActions.clearCompliance());
     dispatch(employeesActions.clearEmployees());
+    dispatch(pitActions.clearPIT());
+    dispatch(incomeActions.clearIncome());
+    dispatch(payrollActions.clearPayrollSchedules());
+    dispatch(citActions.clearCIT());
   };
 };
 
@@ -111,6 +126,10 @@ export const resetBusinessData = () => {
     dispatch(whtActions.clearWHT());
     dispatch(complianceActions.clearCompliance());
     dispatch(employeesActions.clearEmployees());
+    dispatch(pitActions.clearPIT());
+    dispatch(incomeActions.clearIncome());
+    dispatch(payrollActions.clearPayrollSchedules());
+    dispatch(citActions.clearCIT());
   };
 };
 

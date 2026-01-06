@@ -35,6 +35,7 @@ import { ButtonVariant, ButtonSize, LoadingStateSize } from "@/lib/utils/client-
 import { VATRemittanceTracker } from "./VATRemittanceTracker";
 import { SubscriptionPlan } from "@/lib/server/utils/enum";
 import { NextStepCard } from "@/components/shared/NextStepCard";
+import { SUBSCRIPTION_PRICING } from "@/lib/constants/subscription";
 import { VatGuideModal } from "./VatGuideModal";
 import { HelpCircle } from "lucide-react";
 
@@ -525,6 +526,17 @@ export function VATContent({ entityId, accountType }: VATContentProps) {
       );
     }
 
+    // Check if user has access to VAT remittance feature
+    const hasVatRemittanceFeature = SUBSCRIPTION_PRICING[currentPlan]?.features?.vatRemittance;
+    if (!hasVatRemittanceFeature) {
+      // User doesn't have access, don't fetch and ensure list is empty
+      dispatch(vatActions.setVATRemittances({
+        remittances: [],
+        companyId: entityId,
+      }));
+      return;
+    }
+
     fetchVATReq({
       successRes: (response: any) => {
         const remittancesArray = Array.isArray(response?.data?.data) 
@@ -539,6 +551,16 @@ export function VATContent({ entityId, accountType }: VATContentProps) {
         }));
       },
       errorRes: (errorResponse: any) => {
+        // Ignore 403 (Forbidden) errors, as they likely indicate plan limitations (e.g. Free plan)
+        // We don't want to log these as console errors to avoid confusing users
+        if (errorResponse?.status === 403) {
+          dispatch(vatActions.setVATRemittances({
+            remittances: [],
+            companyId: entityId,
+          }));
+          return false; // Don't show toast
+        }
+
         console.error("[VAT Content] Error fetching remittances:", errorResponse);
         // Don't show error toast for remittances - it's a secondary feature
         // Just log it and continue
@@ -704,8 +726,9 @@ export function VATContent({ entityId, accountType }: VATContentProps) {
               onClick={() => setIsGuideOpen(true)}
               className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200"
             >
-              <HelpCircle className="w-4 h-4 mr-2" />
-              How does this work?
+              <HelpCircle className="w-4 h-4 mr-1.5 md:mr-2" />
+              <span className="hidden md:inline">How does this work?</span>
+              <span className="md:hidden">Guide</span>
             </Button>
           </motion.div>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -714,10 +737,10 @@ export function VATContent({ entityId, accountType }: VATContentProps) {
               size={ButtonSize.Sm}
               onClick={handleRefresh}
               disabled={isLoading}
-              className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed px-3 md:px-4"
             >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
-              Refresh
+              <RefreshCw className={`w-4 h-4 md:mr-2 ${isLoading ? "animate-spin" : ""}`} />
+              <span className="hidden md:inline">Refresh</span>
             </Button>
           </motion.div>
         </div>
@@ -892,7 +915,7 @@ export function VATContent({ entityId, accountType }: VATContentProps) {
                 </p>
                 <div className="text-sm opacity-90 space-y-2">
                   <p>
-                    Your annual turnover for {selectedYear} is <strong>{formatCurrency(summary.annualTurnover)}</strong>, which is below the <strong>₦100,000,000</strong> threshold for mandatory VAT registration (Nigeria Tax Reform Acts 2025).
+                    Your annual turnover for {selectedYear} is <strong>{formatCurrency(summary.annualTurnover)}</strong>, which is below the <strong>₦25,000,000</strong> threshold for mandatory VAT registration (Nigeria Tax Reform Acts 2025).
                   </p>
                   {(summary.outputVAT || 0) > 0 ? (
                     <p className="font-medium">

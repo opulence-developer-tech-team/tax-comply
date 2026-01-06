@@ -29,7 +29,7 @@ export function ReferralLinkCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="p-6 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/30 border-2 border-emerald-100 shadow-sm relative overflow-hidden">
+      <Card className="p-0 md:p-6 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/30 border-2 border-emerald-100 shadow-sm relative overflow-hidden">
         {/* Decorative Background */}
          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-100/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none" />
 
@@ -53,12 +53,12 @@ export function ReferralLinkCard({
                Share this link. When your friends sign up, they will see <strong>@{username}</strong> referred them!
             </p>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-white rounded-xl p-2 pl-4 border border-slate-200 shadow-sm transition-all focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500">
-              <code className="flex-1 text-sm text-slate-600 font-mono truncate py-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-white rounded-xl px-4 py-3 border border-slate-200 shadow-sm transition-all focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500">
+              <code className="flex-1 text-sm text-slate-600 font-mono break-all whitespace-normal py-2 text-center sm:text-left">
                 {referralLink || "Loading your unique link..."}
               </code>
               
-              <div className="flex gap-2 shrink-0">
+              <div className="grid grid-cols-2 gap-2 w-full sm:w-auto sm:flex shrink-0">
                 {/* Share Button (Web Share API) */}
                 <Button
                   onClick={async () => {
@@ -91,7 +91,7 @@ export function ReferralLinkCard({
                   variant={ButtonVariant.Outline}
                   size={ButtonSize.Md}
                   disabled={!referralLink}
-                  className="bg-white hover:bg-slate-50 text-slate-700 border-slate-200"
+                  className="bg-white hover:bg-slate-50 text-slate-700 border-slate-200 w-full sm:w-auto"
                 >
                   <Share2 className="w-4 h-4 sm:mr-2" />
                   <span className="hidden sm:inline">Share</span>
@@ -103,7 +103,7 @@ export function ReferralLinkCard({
                   variant={ButtonVariant.Primary}
                   size={ButtonSize.Md}
                   disabled={!referralLink}
-                  className={`transition-all ${copied ? 'bg-emerald-600' : 'bg-slate-900 hover:bg-slate-800'}`}
+                  className={`transition-all w-full sm:w-auto ${copied ? 'bg-emerald-600' : 'bg-slate-900 hover:bg-slate-800'}`}
                 >
                   {copied ? (
                     <>

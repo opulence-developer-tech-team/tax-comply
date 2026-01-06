@@ -27,7 +27,12 @@ export default function ResetPasswordPage() {
       newPassword: {
         required: true,
         minLength: 8,
-        pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        custom: (value) => {
+          if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(value)) {
+            return "Password must contain uppercase letters, lowercase letters, and at least one number.";
+          }
+          return null;
+        },
       },
       confirmPassword: {
         required: true,

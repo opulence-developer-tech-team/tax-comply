@@ -22,6 +22,7 @@ import { StateSelect } from "@/components/ui/StateSelect";
 import { isValidNigerianState } from "@/lib/constants/nigeria";
 import { ButtonVariant, LoadingStateSize } from "@/lib/utils/client-enums";
 import { CURRENT_PRIVACY_POLICY_VERSION, needsPrivacyReconsent } from "@/lib/constants/privacy";
+import { PrivacyConsentSection } from "@/components/shared/PrivacyConsentSection";
 import { NextStepCard } from "@/components/shared/NextStepCard";
 import { HttpMethod } from "@/lib/utils/http-method";
 import {
@@ -690,17 +691,17 @@ export default function BusinessPage() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.5 }}
-                  className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-2xl p-6 mt-6"
+                  className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-2xl p-4 md:p-6 mt-6 md:mt-8"
                 >
-                  <div className="flex items-start space-x-4">
+                  <div className="flex flex-col sm:flex-row items-start gap-4">
                     <div className="bg-emerald-200/50 p-3 rounded-xl shrink-0">
                       <Shield className="w-8 h-8 text-emerald-700" />
                     </div>
-                    <div>
-                      <p className="text-sm font-bold uppercase tracking-wider text-emerald-700 mb-1">
+                    <div className="w-full">
+                      <p className="text-xs md:text-sm font-bold uppercase tracking-wider text-emerald-700 mb-1">
                         Your Tax Category
                       </p>
-                      <h3 className="text-2xl font-extrabold text-emerald-900 mb-2">
+                      <h3 className="text-xl md:text-2xl font-extrabold text-emerald-900 mb-2">
                         {business.taxClassification
                           .replace(/_/g, " ")
                           .replace(/Company/g, "Business")
@@ -710,9 +711,9 @@ export default function BusinessPage() {
                       </h3>
                       
                       <div className="mt-4 pt-4 border-t border-emerald-200/60">
-                         <div className="flex items-baseline gap-2 mb-1">
+                         <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2 mb-2">
                            <span className="text-sm font-semibold text-emerald-800">Annual Turnover:</span>
-                           <span className="text-xl font-bold text-emerald-950">
+                           <span className="text-lg md:text-xl font-bold text-emerald-950">
                              {new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(business.annualTurnover || 0)}
                            </span>
                          </div>
@@ -771,62 +772,18 @@ export default function BusinessPage() {
                 
                 return shouldShow;
               })() && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.55 }}
-                className="bg-blue-50 border-2 border-blue-200 rounded-xl p-5"
-              >
-                <div className="flex items-start space-x-3">
-                  <Shield className="w-5 h-5 text-blue-700 mt-0.5 shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-blue-900 mb-2">
-                      Data Privacy & Security
-                    </p>
-                    <div className="space-y-3">
-                      <p className="text-sm text-blue-800">
-                        Your business information is collected for tax compliance purposes in accordance with NRS (Nigeria Revenue Service) requirements. 
-                        We use this data to calculate tax obligations, generate invoices formatted per NRS (Nigeria Revenue Service) requirements, and help you 
-                        manage your tax compliance.
-                      </p>
-                      <div className="flex items-start space-x-2">
-                        <input
-                          type="checkbox"
-                          id="data-consent"
-                          required
-                          checked={values.privacyConsentGiven ?? false}
-                          onChange={(e) => {
-                            setValue("privacyConsentGiven", e.target.checked);
-                            if (e.target.checked) {
-                              // Set privacy policy version when consent is given
-                              setValue("privacyPolicyVersion", CURRENT_PRIVACY_POLICY_VERSION);
-                            } else {
-                              setValue("privacyPolicyVersion", "");
-                            }
-                          }}
-                          className="mt-1 w-4 h-4 text-emerald-600 border-blue-300 rounded focus:ring-emerald-500 focus:ring-2"
-                        />
-                        <label htmlFor="data-consent" className="text-sm text-blue-800">
-                          I understand that my business information (TIN, CAC, turnover, etc.) will be used for tax compliance 
-                          purposes and agree to the{" "}
-                          <Link 
-                            href="/privacy-policy" 
-                            target="_blank"
-                            className="text-emerald-600 hover:text-emerald-700 font-medium underline inline-flex items-center gap-1"
-                          >
-                            Privacy Policy
-                            <ExternalLink className="w-3 h-3" />
-                          </Link>
-                        </label>
-                      </div>
-                      <p className="text-xs text-blue-700 italic">
-                        Your data is encrypted and secured. We never share your information with third parties except as 
-                        required by law or for tax compliance purposes.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+              <PrivacyConsentSection
+                checked={values.privacyConsentGiven ?? false}
+                onCheckedChange={(checked) => {
+                  setValue("privacyConsentGiven", checked);
+                  if (checked) {
+                    setValue("privacyPolicyVersion", CURRENT_PRIVACY_POLICY_VERSION);
+                  } else {
+                    setValue("privacyPolicyVersion", "");
+                  }
+                }}
+                entityType="business"
+              />
               )}
 
               <motion.div

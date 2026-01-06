@@ -12,7 +12,8 @@ export interface IInvoiceItem {
 
 export interface IInvoice {
   _id?: Types.ObjectId;
-  companyId: Types.ObjectId;
+  companyId?: Types.ObjectId;
+  businessId?: Types.ObjectId;
   invoiceNumber: string; 
   customerName: string;
   customerEmail?: string;

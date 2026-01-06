@@ -332,15 +332,11 @@ export function ExpensesContent({ accountId: accountIdProp, accountType: account
 
     // Check if user has export access (Free plan doesn't have exports)
     if (!hasExportAccess) {
-      showUpgradePrompt({
-        feature: "Expense Report Downloads",
-        currentPlan: currentPlan.toLowerCase(),
-        requiredPlan: "starter",
-        requiredPlanPrice: SUBSCRIPTION_PRICING[SubscriptionPlan.Starter].monthly,
-        message: "Expense report downloads are available on Starter plan (₦3,500/month) and above. Upgrade to download professional expense reports.",
-        reason: UpgradeReason.PlanLimitation,
+      toast.info("Free Plan Limitation", {
+        description: "Your document will include a 'taxcomply.ng' watermark. Upgrade to the Starter plan for official, unbranded documents.",
+        duration: 5000,
       });
-      return;
+      // We allow export but it will be watermarked (backend handles watermark application)
     }
 
     const exportKey = month !== undefined && month !== null ? `expense-${year}-${month}` : `expense-${year}-yearly`;

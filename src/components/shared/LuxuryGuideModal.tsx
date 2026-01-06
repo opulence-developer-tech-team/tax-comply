@@ -53,17 +53,17 @@ export function LuxuryGuideModal({
             className="bg-white w-full h-[100dvh] md:h-auto md:max-h-[90vh] md:max-w-2xl md:rounded-2xl shadow-2xl overflow-hidden flex flex-col pointer-events-auto relative z-10"
           >
             {/* Header - Luxury Green Gradient */}
-            <div className="bg-gradient-to-r from-emerald-800 to-emerald-600 p-6 text-white shrink-0">
-              <div className="flex justify-between items-start">
+            <div className="bg-gradient-to-r from-emerald-800 to-emerald-600 px-6 pb-6 pt-12 md:p-6 text-white shrink-0">
+              <div className="flex justify-between items-start gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold">{title}</h2>
+                  <h2 className="text-2xl font-bold leading-tight">{title}</h2>
                   <p className="text-emerald-100 mt-1 text-sm">
                     {subtitle}
                   </p>
                 </div>
                 <button 
                   onClick={onClose}
-                  className="p-2 bg-emerald-700/50 hover:bg-emerald-700 rounded-full transition-colors"
+                  className="p-2 bg-emerald-700/50 hover:bg-emerald-700 rounded-full transition-colors shrink-0"
                 >
                   <X className="w-5 h-5" />
                 </button>
