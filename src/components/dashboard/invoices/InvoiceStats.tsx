@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FileText, DollarSign, CheckCircle2, Clock } from "lucide-react";
+import { FileText, CheckCircle2, Clock } from "lucide-react"; // DollarSign removed
+import { NairaSign } from "@/components/icons/NairaSign";
 import { formatCurrency } from "@/lib/utils";
 import { Variants } from "framer-motion";
 
@@ -60,7 +61,7 @@ export function InvoiceStats({
       >
         <div className="flex items-center justify-between mb-4">
           <div className="p-3 bg-emerald-100 rounded-xl">
-            <DollarSign className="w-8 h-8 text-emerald-700" />
+            <NairaSign className="w-8 h-8 text-emerald-700" />
           </div>
           <span className="text-base font-bold text-emerald-700 bg-emerald-100/50 px-4 py-1.5 rounded-full">
             Total Value

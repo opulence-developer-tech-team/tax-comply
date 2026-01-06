@@ -466,9 +466,10 @@ export function ComplianceContent({ entityId, accountType, currentPlan }: Compli
 
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
              <Button
-                variant={ButtonVariant.Outline}
+                variant={ButtonVariant.Primary}
+                size={ButtonSize.Sm}
                 onClick={() => setIsGuideOpen(true)}
-                className="justify-center border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                className="justify-center bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200"
             >
                 <Info className="w-4 h-4 mr-2" />
                 What is this?

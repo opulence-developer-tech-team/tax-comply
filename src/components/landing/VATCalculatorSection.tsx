@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { VAT_RATE } from "@/lib/constants/tax";
-import { ButtonSize } from "@/lib/utils/client-enums";
+import { ButtonSize, ButtonVariant } from "@/lib/utils/client-enums";
 
 const NIGERIAN_VAT_RATE = VAT_RATE;
 
@@ -246,7 +246,8 @@ export function VATCalculatorSection() {
                   <Button
                     onClick={handleCalculate}
                     size={ButtonSize.Lg}
-                    className="w-full py-4 text-lg font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl"
+                    variant={ButtonVariant.Primary}
+                    className="w-full py-4 text-lg font-bold shadow-xl hover:shadow-2xl transition-all duration-300 rounded-xl"
                   >
                     Calculate Now
                   </Button>

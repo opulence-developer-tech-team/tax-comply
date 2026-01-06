@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Receipt, TrendingDown, Calculator, DollarSign } from "lucide-react";
+import { Receipt, TrendingDown, Calculator } from "lucide-react"; // DollarSign removed
+import { NairaSign } from "@/components/icons/NairaSign";
 import { formatCurrency } from "@/lib/utils";
 import { Variants } from "framer-motion";
 
@@ -53,7 +54,7 @@ export function ExpenseStats({
       >
         <div className="flex items-center justify-between mb-4">
           <div className="p-3 bg-emerald-100 rounded-xl">
-            <DollarSign className="w-6 h-6 text-emerald-600" />
+            <NairaSign className="w-6 h-6 text-emerald-600" />
           </div>
           <span className="text-sm font-bold text-emerald-700 bg-emerald-100/50 px-3 py-1 rounded-full border border-emerald-200">
             Spent

@@ -39,11 +39,12 @@ import {
   AlertCircle,
   CheckCircle2,
   Clock,
-  DollarSign,
+  // DollarSign,
   Info,
   ExternalLink,
   Sparkles,
 } from "lucide-react";
+import { NairaSign } from "@/components/icons/NairaSign";
 import Link from "next/link";
 import { WHTRemittanceTracker } from "@/components/dashboard/wht/WHTRemittanceTracker";
 import { useUpgradePrompt } from "@/hooks/useUpgradePrompt";
@@ -855,7 +856,7 @@ export function WHTContent({ entityId, accountType, currentPlan }: WHTContentPro
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-emerald-100 rounded-xl">
-                      <DollarSign className="w-6 h-6 text-emerald-600" />
+                      <NairaSign className="w-6 h-6 text-emerald-600" />
                     </div>
                     {summary.status === "compliant" && (
                       <CheckCircle2 className="w-5 h-5 text-emerald-600" />

@@ -369,9 +369,9 @@ export function UpgradePrompt({
                 <div className="border-t border-slate-200 pt-6 mt-6">
                   {selectedPlan ? (
                     <div className="bg-gradient-to-r from-emerald-50 to-emerald-100/50 rounded-xl p-5 mb-6 border-2 border-emerald-200">
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-emerald-600 rounded-lg flex items-center justify-center">
+                          <div className="w-12 h-12 bg-emerald-600 rounded-lg flex items-center justify-center shrink-0">
                             <Check className="w-6 h-6 text-white" />
                           </div>
                           <div>
@@ -381,7 +381,7 @@ export function UpgradePrompt({
                             </p>
                           </div>
                         </div>
-                        <div className="text-right">
+                        <div className="text-left sm:text-right pl-[4rem] sm:pl-0">
                           <p className="text-sm text-slate-600 mb-1">Total Price</p>
                           <p className="font-bold text-emerald-600 text-xl">
                             {(() => {
@@ -412,7 +412,8 @@ export function UpgradePrompt({
                     <Button
                       onClick={handleUpgrade}
                       disabled={!selectedPlan}
-                      className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white border-0 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed py-3"
+                      variant={ButtonVariant.Primary}
+                      className="flex-1 shadow-lg py-3"
                     >
                       {selectedPlan ? "Upgrade Now" : "Select a Plan"}
                       <ArrowRight className="w-4 h-4 ml-2" />

@@ -25,7 +25,7 @@ import {
   LayoutDashboard,
   Building2,
   FileText,
-  DollarSign,
+  // DollarSign,
   Wallet,
   Users,
   CheckCircle2,
@@ -41,6 +41,7 @@ import {
   Receipt,
   Calculator,
 } from "lucide-react";
+import { NairaSign } from "@/components/icons/NairaSign";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -201,8 +202,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     { name: "Business", href: "/dashboard/business", icon: Building2, showFor: [AccountType.Business] },
     { name: "Invoices", href: "/dashboard/invoices", icon: FileText, showFor: [AccountType.Company] }, // Invoices for Company accounts
     { name: "Invoices", href: "/dashboard/business/invoices", icon: FileText, showFor: [AccountType.Business] }, // Invoices for Business accounts
-    { name: "Value Added Tax", href: "/dashboard/vat", icon: DollarSign, showFor: [AccountType.Company] }, // VAT for Company accounts
-    { name: "Value Added Tax", href: "/dashboard/business/vat", icon: DollarSign, showFor: [AccountType.Business] }, // VAT for Business accounts
+    { name: "Value Added Tax", href: "/dashboard/vat", icon: NairaSign, showFor: [AccountType.Company] }, // VAT for Company accounts
+    { name: "Value Added Tax", href: "/dashboard/business/vat", icon: NairaSign, showFor: [AccountType.Business] }, // VAT for Business accounts
     { name: "Withholding Tax", href: "/dashboard/wht", icon: Receipt, showFor: [AccountType.Company] }, // WHT for Company accounts
     { name: "Withholding Tax", href: "/dashboard/business/wht", icon: Receipt, showFor: [AccountType.Business] }, // WHT for Business accounts
     { name: "Company Income Tax", href: "/dashboard/cit", icon: Building2, showFor: [AccountType.Company] }, // Company Income Tax - ONLY for Company accounts (Business uses PIT)

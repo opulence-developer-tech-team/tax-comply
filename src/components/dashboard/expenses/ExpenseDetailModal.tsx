@@ -9,12 +9,13 @@ import { LoadingState } from "@/components/shared/LoadingState";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Alert } from "@/components/ui/Alert";
 import { useHttp } from "@/hooks/useHttp";
+import { NairaSign } from "@/components/icons/NairaSign";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import {
   Receipt,
   Calendar,
   Tag,
-  DollarSign,
+  // DollarSign,
   TrendingDown,
   Building2,
   FileText,
@@ -323,7 +324,7 @@ export function ExpenseDetailModal({
                   </div>
                   <div className="pt-4 border-t border-slate-200">
                     <div className="flex items-start gap-3">
-                      <DollarSign className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
+                      <NairaSign className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
                       <div className="flex-1">
                         <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Amount</p>
                         <p className="text-2xl font-bold text-slate-900">

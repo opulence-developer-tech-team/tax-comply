@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Calendar, Download } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { ButtonSize } from "@/lib/utils/client-enums";
+import { ButtonSize, ButtonVariant } from "@/lib/utils/client-enums";
 
 interface ExpenseSummaryTabProps {
   summaryYear: number;
@@ -55,15 +55,15 @@ export function ExpenseSummaryTab({
       className="space-y-6"
     >
       <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border-2 border-emerald-200 shadow-lg shadow-emerald-500/10">
-        <div className="p-6">
+        <div className="p-0 md:p-6">
           <div className="mb-6">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="p-3 bg-emerald-600 rounded-xl">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
+              <div className="p-3 bg-emerald-600 rounded-xl shrink-0">
                 <Download className="w-6 h-6 text-white" />
               </div>
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900">Export Expense Reports</h2>
-                <p className="text-slate-600 mt-1">Generate and download expense reports as PDFs</p>
+              <div className="text-left">
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">Export Expense Reports</h2>
+                <p className="text-sm sm:text-base text-slate-600 mt-1">Generate and download expense reports as PDFs</p>
               </div>
             </div>
           </div>
@@ -121,10 +121,11 @@ export function ExpenseSummaryTab({
                     {onExportYearly && (
                       <div className="mt-4">
                         <Button
-                          size={ButtonSize.Sm}
+                          size={ButtonSize.Md}
+                          variant={ButtonVariant.Primary}
                           onClick={() => onExportYearly(yearlySummaryYear)}
                           disabled={isExportingYearly || !yearlySummaryYear}
-                          className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white border-0 shadow-md hover:shadow-lg transition-all"
+                          className="w-full shadow-md hover:shadow-lg transition-all py-3"
                         >
                           {isExportingYearly ? (
                             <>
@@ -134,7 +135,7 @@ export function ExpenseSummaryTab({
                           ) : (
                             <>
                               <Download className="w-4 h-4 mr-2" />
-                              Export Yearly Report ({yearlySummaryYear})
+                              Export {yearlySummaryYear}
                             </>
                           )}
                         </Button>
@@ -202,10 +203,11 @@ export function ExpenseSummaryTab({
                     {onExportMonthly && (
                       <div className="mt-4">
                         <Button
-                          size={ButtonSize.Sm}
+                          size={ButtonSize.Md}
+                          variant={ButtonVariant.Primary}
                           onClick={() => onExportMonthly(summaryYear, summaryMonth)}
                           disabled={isExportingMonthly || !summaryYear || !summaryMonth}
-                          className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white border-0 shadow-md hover:shadow-lg transition-all"
+                          className="w-full shadow-md hover:shadow-lg transition-all py-3"
                         >
                           {isExportingMonthly ? (
                             <>
@@ -215,7 +217,7 @@ export function ExpenseSummaryTab({
                           ) : (
                             <>
                               <Download className="w-4 h-4 mr-2" />
-                              Export Monthly Report ({months.find((m) => m.value === summaryMonth)?.label} {summaryYear})
+                              Export {months.find((m) => m.value === summaryMonth)?.label} {summaryYear}
                             </>
                           )}
                         </Button>

@@ -2,7 +2,8 @@
 
 import React from "react";
 import { motion, Variants } from "framer-motion";
-import { FileText, DollarSign, TrendingUp, CheckCircle2 } from "lucide-react";
+import { FileText, TrendingUp, CheckCircle2 } from "lucide-react"; // DollarSign removed
+import { NairaSign } from "@/components/icons/NairaSign";
 import { cn } from "@/lib/utils";
 import { LoadingSpinnerTheme, LoadingSpinnerSize, LoadingSpinnerVariant } from "@/lib/utils/client-enums";
 
@@ -109,7 +110,7 @@ const themeConfig: Record<LoadingSpinnerTheme, {
     primary: "border-emerald-600",
     secondary: "border-emerald-100",
     accent: "text-emerald-600",
-    icon: DollarSign,
+    icon: NairaSign,
     description: "Calculating finances",
   },
   [LoadingSpinnerTheme.Corporate]: {
@@ -123,7 +124,7 @@ const themeConfig: Record<LoadingSpinnerTheme, {
     primary: "border-emerald-500",
     secondary: "border-emerald-100",
     accent: "text-emerald-500",
-    icon: DollarSign,
+    icon: NairaSign,
     description: "Processing income",
   },
 };

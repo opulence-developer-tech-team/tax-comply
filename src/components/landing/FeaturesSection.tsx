@@ -3,7 +3,8 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { FileText, DollarSign, Wallet, CheckCircle2, BarChart3, Building2, Zap, ArrowRight, TrendingDown, Users } from "lucide-react";
+import { FileText, Wallet, CheckCircle2, BarChart3, Building2, Zap, ArrowRight, TrendingDown, Users } from "lucide-react"; // DollarSign
+import { NairaSign } from "@/components/icons/NairaSign";
 import { VAT_RATE } from "@/lib/constants/tax";
 
 const features = [
@@ -20,7 +21,7 @@ const features = [
     benefit: "NRS Compliant",
   },
   {
-    icon: DollarSign,
+    icon: NairaSign,
     title: "Real-Time Calculations",
     description: "Know exactly what you owe in VAT and Company Tax at any moment. No surprises.",
     benefit: "Always Accurate",

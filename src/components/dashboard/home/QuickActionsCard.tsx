@@ -8,7 +8,8 @@ import { useUpgradePrompt } from "@/hooks/useUpgradePrompt";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { SubscriptionPlan } from "@/lib/server/utils/enum";
 import { SUBSCRIPTION_PRICING } from "@/lib/constants/subscription";
-import { FileText, DollarSign, CheckCircle2, Lock, TrendingUp, TrendingDown } from "lucide-react";
+import { FileText, CheckCircle2, Lock, TrendingUp, TrendingDown } from "lucide-react"; // DollarSign removed
+import { NairaSign } from "@/components/icons/NairaSign";
 import { AccountType } from "@/lib/utils/account-type";
 import { ButtonVariant } from "@/lib/utils/client-enums";
 import { UpgradeReason } from "@/lib/utils/upgrade-reason";
@@ -206,7 +207,7 @@ export function QuickActionsCard() {
               }`}
             >
               {hasPayrollAccess ? (
-                <DollarSign className="w-6 h-6" />
+                <NairaSign className="w-6 h-6" />
               ) : (
                 <Lock className="w-6 h-6" />
               )}

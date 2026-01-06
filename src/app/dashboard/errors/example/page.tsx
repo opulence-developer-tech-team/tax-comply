@@ -17,7 +17,8 @@ import {
   EmptyStateError,
 } from "@/components/shared/ErrorState";
 import { ErrorVariant, ButtonVariant } from "@/lib/utils/client-enums";
-import { AlertCircle, FileText, DollarSign } from "lucide-react";
+import { AlertCircle, FileText } from "lucide-react"; // DollarSign removed
+import { NairaSign } from "@/components/icons/NairaSign";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 
@@ -125,7 +126,7 @@ export default function ErrorExamplesPage() {
                 variant={ErrorVariant.Error}
                 title="Payment Processing Failed"
                 description="We couldn't process your payment. Please check your payment details and try again, or use a different payment method."
-                icon={DollarSign}
+                icon={NairaSign}
                 primaryAction={{
                   label: "Retry Payment",
                   onClick: handleRetry,
@@ -174,7 +175,7 @@ export default function ErrorExamplesPage() {
                 variant={ErrorVariant.Empty}
                 title="No Transactions Found"
                 description="You haven't recorded any transactions yet. Start tracking your company finances by creating your first transaction."
-                icon={DollarSign}
+                icon={NairaSign}
                 primaryAction={{
                   label: "Create Transaction",
                   onClick: handleCreate,

@@ -108,17 +108,17 @@ export function DashboardHeader() {
         </div>
         
         <Button 
-          variant={ButtonVariant.Outline} 
+          variant={ButtonVariant.Ghost} 
           onClick={() => setIsGuideOpen(true)}
-          className="self-start sm:self-auto border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-300 transition-all shadow-sm group py-6 px-6 rounded-xl"
+          className="self-start sm:self-auto text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 transition-all group py-2 px-3 h-auto rounded-lg"
         >
-          <div className="flex items-center gap-3">
-            <div className="bg-emerald-100 p-1.5 rounded-full group-hover:bg-emerald-200 transition-colors">
-              <HelpCircle className="w-5 h-5" />
+          <div className="flex items-center gap-2">
+            <div className="bg-emerald-100 p-1 rounded-full group-hover:bg-emerald-200 transition-colors">
+              <HelpCircle className="w-4 h-4" />
             </div>
-            <div className="text-left">
-              <span className="block text-xs font-semibold uppercase tracking-wider text-emerald-600/70">Need Help?</span>
-              <span className="block font-bold text-base">How This Page Works</span>
+            <div className="text-left leading-tight">
+              <span className="block text-[10px] font-semibold uppercase tracking-wider text-emerald-600/70">Need Help?</span>
+              <span className="block font-bold text-sm">How This Page Works</span>
             </div>
           </div>
         </Button>

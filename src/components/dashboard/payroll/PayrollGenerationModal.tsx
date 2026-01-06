@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/Button";
 import { useForm } from "@/hooks/useForm";
 import { useHttp } from "@/hooks/useHttp";
 import { useUpgradePrompt } from "@/hooks/useUpgradePrompt";
-import { DollarSign, Save, X, AlertCircle, Calendar, Users, CheckCircle2 } from "lucide-react";
+import { Save, X, AlertCircle, Calendar, Users, CheckCircle2 } from "lucide-react";
+import { NairaSign } from "@/components/icons/NairaSign";
 import { Alert } from "@/components/ui/Alert";
 import { AlertVariant, ButtonVariant } from "@/lib/utils/client-enums";
 import { toast } from "sonner";
@@ -412,7 +413,7 @@ export function PayrollGenerationModal({
         <motion.div variants={itemVariants} className="mb-6">
           <div className="flex items-center space-x-3 mb-2">
             <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-600 to-emerald-700 text-white">
-              <DollarSign className="w-6 h-6" />
+              <NairaSign className="w-6 h-6" />
             </div>
             <h2 className="text-2xl font-bold text-slate-900">
               Generate Payroll for Employees

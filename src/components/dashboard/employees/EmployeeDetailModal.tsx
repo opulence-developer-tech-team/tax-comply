@@ -20,7 +20,7 @@ import {
   Mail,
   Phone,
   Calendar,
-  DollarSign,
+  // DollarSign,
   Hash,
   Building2,
   CreditCard,
@@ -31,6 +31,7 @@ import {
   Banknote,
   Trash2,
 } from "lucide-react";
+import { NairaSign } from "@/components/icons/NairaSign";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { LoadingStateSize, AlertVariant, ButtonVariant, ConfirmModalVariant } from "@/lib/utils/client-enums";
 import { UpgradeReason } from "@/lib/utils/upgrade-reason";
@@ -320,7 +321,7 @@ export function EmployeeDetailModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1">
                 <div className="flex items-center text-sm text-slate-600 mb-1">
-                  <DollarSign className="w-4 h-4 mr-2 text-emerald-600" />
+                  <NairaSign className="w-4 h-4 mr-2 text-emerald-600" />
                   Monthly Salary
                 </div>
                 <p className="text-2xl font-bold text-emerald-700">{formatCurrency(employee.salary)}</p>

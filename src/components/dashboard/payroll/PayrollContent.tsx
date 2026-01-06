@@ -24,7 +24,8 @@ import { UpgradeReason } from "@/lib/utils/upgrade-reason";
 import { toast } from "sonner";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { ConfirmModalVariant } from "@/lib/utils/client-enums";
-import { DollarSign, RefreshCw, UserPlus, Trash2, Eye, CheckCircle2, Send, ChevronLeft, ChevronRight } from "lucide-react";
+import { RefreshCw, UserPlus, Trash2, Eye, CheckCircle2, Send, ChevronLeft, ChevronRight } from "lucide-react";
+import { NairaSign } from "@/components/icons/NairaSign";
 import { formatDate } from "@/lib/utils";
 import { PayrollGenerationModal } from "@/components/dashboard/payroll/PayrollGenerationModal";
 import { NextStepCard } from "@/components/shared/NextStepCard";
@@ -522,7 +523,7 @@ export function PayrollContent({ entityId, accountType, currentPlan }: PayrollCo
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
             <div className="flex items-center gap-2">
               <div className="bg-emerald-100 p-2 rounded-lg">
-                <DollarSign className="w-6 h-6 text-emerald-600" />
+                <NairaSign className="w-6 h-6 text-emerald-600" />
               </div>
               <h1 className="text-2xl md:text-3xl font-bold text-slate-900">Staff Salaries & Tax</h1>
             </div>

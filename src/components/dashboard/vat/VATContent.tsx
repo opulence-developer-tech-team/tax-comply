@@ -28,7 +28,8 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { vatActions } from "@/store/redux/vat/vat-slice";
 import { LoadingState } from "@/components/shared/LoadingState";
-import { TrendingUp, TrendingDown, DollarSign, RefreshCw, Calendar, ChevronDown, Info, Calculator } from "lucide-react";
+import { TrendingUp, TrendingDown, RefreshCw, Calendar, ChevronDown, Info, Calculator } from "lucide-react"; // DollarSign removed
+import { NairaSign } from "@/components/icons/NairaSign";
 import { HttpMethod } from "@/lib/utils/http-method";
 import { AccountType } from "@/lib/utils/account-type";
 import { ButtonVariant, ButtonSize, LoadingStateSize } from "@/lib/utils/client-enums";
@@ -724,7 +725,7 @@ export function VATContent({ entityId, accountType }: VATContentProps) {
               variant={ButtonVariant.Primary}
               size={ButtonSize.Sm}
               onClick={() => setIsGuideOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200"
+              className="shadow-lg shadow-emerald-200"
             >
               <HelpCircle className="w-4 h-4 mr-1.5 md:mr-2" />
               <span className="hidden md:inline">How does this work?</span>
@@ -853,16 +854,16 @@ export function VATContent({ entityId, accountType }: VATContentProps) {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-emerald-100">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-emerald-100">
                     <Button
                       variant={ButtonVariant.Outline}
                       size={ButtonSize.Sm}
                       onClick={handleResetFilters}
-                      className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 text-sm"
+                      className="w-full sm:w-auto border-emerald-200 text-emerald-700 hover:bg-emerald-50 text-sm order-2 sm:order-1"
                     >
                       Reset to Current
                     </Button>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 text-center sm:text-right w-full sm:w-auto order-1 sm:order-2">
                       {selectedMonth 
                         ? `Showing data for ${monthNames[selectedMonth - 1]} ${selectedYear}`
                         : `Showing yearly summary for ${selectedYear}`}
@@ -956,7 +957,7 @@ export function VATContent({ entityId, accountType }: VATContentProps) {
                   <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-200/20 rounded-full blur-2xl"></div>
                   <div className="relative overflow-visible">
                     <div className="flex items-center justify-between mb-3">
-                      <DollarSign className="w-6 h-6 text-emerald-600" />
+                      <NairaSign className="w-6 h-6 text-emerald-600" />
                       <TrendingUp className="w-5 h-5 text-emerald-600" />
                     </div>
                     <div className="flex items-center gap-2 mb-2">
@@ -990,7 +991,7 @@ export function VATContent({ entityId, accountType }: VATContentProps) {
                   <div className="absolute top-0 right-0 w-32 h-32 bg-green-200/20 rounded-full blur-2xl"></div>
                   <div className="relative overflow-visible">
                     <div className="flex items-center justify-between mb-3">
-                      <DollarSign className="w-6 h-6 text-green-600" />
+                      <NairaSign className="w-6 h-6 text-green-600" />
                       <TrendingDown className="w-5 h-5 text-green-600" />
                     </div>
                     <div className="flex items-center gap-2 mb-2">
@@ -1030,7 +1031,7 @@ export function VATContent({ entityId, accountType }: VATContentProps) {
                   }`}></div>
                   <div className="relative overflow-visible">
                     <div className="flex items-center justify-between mb-3">
-                      <DollarSign className={`w-6 h-6 ${(summary.netVAT ?? 0) >= 0 ? "text-red-600" : "text-emerald-600"}`} />
+                      <NairaSign className={`w-6 h-6 ${(summary.netVAT ?? 0) >= 0 ? "text-red-600" : "text-emerald-600"}`} />
                       {(summary.netVAT ?? 0) >= 0 ? (
                         <TrendingUp className="w-5 h-5 text-red-600" />
                       ) : (

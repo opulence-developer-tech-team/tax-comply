@@ -63,7 +63,7 @@ export function Button({
   const baseStyles = "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none";
   
   const variants: Record<ButtonVariant, string> = {
-    [ButtonVariant.Primary]: "bg-gradient-to-r from-emerald-700 to-emerald-600 text-white hover:from-emerald-800 hover:to-emerald-700 focus:ring-emerald-500 shadow-lg hover:shadow-xl active:scale-[0.98]",
+    [ButtonVariant.Primary]: "bg-gradient-to-r from-emerald-600 to-emerald-700 text-white hover:from-emerald-700 hover:to-emerald-800 focus:ring-emerald-500 shadow-lg hover:shadow-xl active:scale-[0.98]",
     [ButtonVariant.Secondary]: "bg-slate-600 text-white hover:bg-slate-700 focus:ring-slate-500 shadow-md hover:shadow-lg active:scale-[0.98]",
     [ButtonVariant.Outline]: "border-2 border-emerald-700 text-emerald-700 hover:bg-emerald-50 focus:ring-emerald-500 active:scale-[0.98]",
     [ButtonVariant.Danger]: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-md hover:shadow-lg active:scale-[0.98]",
