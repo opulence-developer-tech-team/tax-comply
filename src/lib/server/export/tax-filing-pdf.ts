@@ -96,7 +96,7 @@ function getMonthName(month: number): string {
 /**
  * Adds a watermark to the PDF page
  */
-function addWatermark(doc: jsPDF, pageWidth: number, pageHeight: number, text: string = "taxcomply.ng"): void {
+function addWatermark(doc: jsPDF, pageWidth: number, pageHeight: number, text: string = "taxcomply.com.ng"): void {
   doc.saveGraphicsState();
   doc.setGState(new (doc as any).GState({ opacity: 0.1 }));
   doc.setFontSize(60);
@@ -500,7 +500,7 @@ export async function generateVATReturnPDF(
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
-        addWatermark(doc, pageWidth, pageHeight, "taxcomply.ng");
+        addWatermark(doc, pageWidth, pageHeight, "taxcomply.com.ng");
     }
   }
 
@@ -738,7 +738,7 @@ export async function generateYearlyVATReturnPDF(
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
-        addWatermark(doc, pageWidth, pageHeight, "taxcomply.ng");
+        addWatermark(doc, pageWidth, pageHeight, "taxcomply.com.ng");
     }
   }
 
@@ -1018,7 +1018,7 @@ export async function generatePAYERemittancePDF(
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
-        addWatermark(doc, pageWidth, pageHeight, "taxcomply.ng");
+        addWatermark(doc, pageWidth, pageHeight, "taxcomply.com.ng");
     }
   }
 
@@ -1682,7 +1682,7 @@ export async function generateCITReturnPDF(
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
-        addWatermark(doc, pageWidth, pageHeight, "taxcomply.ng");
+        addWatermark(doc, pageWidth, pageHeight, "taxcomply.com.ng");
     }
   }
 
@@ -2476,7 +2476,7 @@ export async function generatePITReturnPDF(
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
-        addWatermark(doc, pageWidth, pageHeight, "taxcomply.ng");
+        addWatermark(doc, pageWidth, pageHeight, "taxcomply.com.ng");
     }
   }
 

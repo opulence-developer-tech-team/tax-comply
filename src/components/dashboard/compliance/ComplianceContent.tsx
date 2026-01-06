@@ -311,7 +311,7 @@ export function ComplianceContent({ entityId, accountType, currentPlan }: Compli
     // Check if user has export access (Free plan doesn't have exports)
     if (!hasExportAccess) {
       toast.info("Free Plan Limitation", {
-        description: "Your document will include a 'taxcomply.ng' watermark. Upgrade to the Starter plan for official, unbranded documents.",
+        description: "Your document will include a 'taxcomply.com.ng' watermark. Upgrade to the Starter plan for official, unbranded documents.",
         duration: 5000,
       });
       // Allow download to proceed with watermark

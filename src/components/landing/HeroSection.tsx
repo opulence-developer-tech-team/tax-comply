@@ -209,7 +209,7 @@ export function HeroSection() {
                         <div className="w-3 h-3 rounded-full bg-emerald-500/50" />
                     </div>
                     <div className="mx-auto px-4 py-1 rounded bg-black/20 text-[10px] text-emerald-500/50 font-mono">
-                        taxcomply.ng/dashboard
+                        taxcomply.com.ng/dashboard
                     </div>
                 </div>
 

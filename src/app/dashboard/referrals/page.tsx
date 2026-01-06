@@ -416,15 +416,15 @@ export default function ReferralsPage() {
           <ReferralGuideModal 
             isOpen={isGuideOpen}
             onClose={() => setIsGuideOpen(false)}
-            referralLink={`${process.env.NEXT_PUBLIC_APP_URL || "https://taxcomply.ng"}/sign-up/${user?.email?.split('@')[0]}`}
+            referralLink={`${process.env.NEXT_PUBLIC_APP_URL || "https://taxcomply.com.ng"}/sign-up/${user?.email?.split('@')[0]}`}
           />
 
           {/* Referral Link Card */}
           <ReferralLinkCard
-            referralLink={`${process.env.NEXT_PUBLIC_APP_URL || "https://taxcomply.ng"}/sign-up/${user?.email?.split('@')[0]}`}
+            referralLink={`${process.env.NEXT_PUBLIC_APP_URL || "https://taxcomply.com.ng"}/sign-up/${user?.email?.split('@')[0]}`}
             copied={copiedLink}
             onCopy={() => {
-              const link = `${process.env.NEXT_PUBLIC_APP_URL || "https://taxcomply.ng"}/sign-up/${user?.email?.split('@')[0]}`;
+              const link = `${process.env.NEXT_PUBLIC_APP_URL || "https://taxcomply.com.ng"}/sign-up/${user?.email?.split('@')[0]}`;
               navigator.clipboard.writeText(link);
               setCopiedLink(true);
               toast.success("Referral link copied to clipboard!");

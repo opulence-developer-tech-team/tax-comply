@@ -104,7 +104,7 @@ export function TaxFilingContent({ accountId: accountIdProp, entityId: entityIdP
     // Check upgrade
     if (!hasExportAccess) {
       toast.info("Free Plan Limitation", {
-        description: "Your document will include a 'taxcomply.ng' watermark. Upgrade to the Starter plan for official, unbranded documents.",
+        description: "Your document will include a 'taxcomply.com.ng' watermark. Upgrade to the Starter plan for official, unbranded documents.",
         duration: 5000,
       });
       // We don't return here anymore, we let it proceed to download the watermarked version
