@@ -204,8 +204,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     { name: "Invoices", href: "/dashboard/business/invoices", icon: FileText, showFor: [AccountType.Business] }, // Invoices for Business accounts
     { name: "Value Added Tax", href: "/dashboard/vat", icon: NairaSign, showFor: [AccountType.Company] }, // VAT for Company accounts
     { name: "Value Added Tax", href: "/dashboard/business/vat", icon: NairaSign, showFor: [AccountType.Business] }, // VAT for Business accounts
-    { name: "Withholding Tax", href: "/dashboard/wht", icon: Receipt, showFor: [AccountType.Company] }, // WHT for Company accounts
-    { name: "Withholding Tax", href: "/dashboard/business/wht", icon: Receipt, showFor: [AccountType.Business] }, // WHT for Business accounts
+    { name: "Withholding Tax", href: "/dashboard/wht", icon: NairaSign, showFor: [AccountType.Company] }, // WHT for Company accounts
+    { name: "Withholding Tax", href: "/dashboard/business/wht", icon:NairaSign, showFor: [AccountType.Business] }, // WHT for Business accounts
     { name: "Company Income Tax", href: "/dashboard/cit", icon: Building2, showFor: [AccountType.Company] }, // Company Income Tax - ONLY for Company accounts (Business uses PIT)
     { name: "Personal Income Tax", href: "/dashboard/pit", icon: Calculator, showFor: [AccountType.Individual] }, // Personal Income Tax for individual accounts
     { name: "Personal Income Tax", href: "/dashboard/business/pit", icon: Calculator, showFor: [AccountType.Business] }, // Personal Income Tax for business accounts (sole proprietorships use PIT, not CIT)

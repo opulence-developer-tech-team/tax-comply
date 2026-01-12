@@ -20,10 +20,10 @@ class AuthService {
     email: string,
     firstName: string,
     otp: string,
-    verificationToken?: string
+    verificationLink: string
   ): Promise<boolean> {
     try {
-      const emailHtml = emailService.generateOTPEmailTemplate(otp, firstName);
+      const emailHtml = emailService.generateOTPEmailTemplate(otp, firstName, verificationLink);
       const emailSent = await emailService.sendEmail({
         to: email,
         subject: "Email Verification Code - TaxComply NG",
@@ -113,7 +113,10 @@ class AuthService {
         logger.warn("OTP saved but verification token save failed", { userId, email });
       }
 
-      const emailSent = await this.sendOTPToEmail(email, firstName, otp, verificationToken);
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const verificationLink = `${baseUrl}/verify-email/${encodeURIComponent(email)}/${otp}`;
+
+      const emailSent = await this.sendOTPToEmail(email, firstName, otp, verificationLink);
       if (!emailSent) {
         logger.warn("OTP saved but email sending failed", { userId, email });
         return { success: false };

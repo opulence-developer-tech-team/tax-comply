@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Copy, Check, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { ButtonVariant, ButtonSize } from "@/lib/utils/client-enums";
+import { useShareReferral } from "@/hooks/useShareReferral";
 
 interface ReferralLinkCardProps {
   referralLink: string;
@@ -20,6 +21,7 @@ export function ReferralLinkCard({
   onCopy,
   email,
 }: ReferralLinkCardProps) {
+  const { shareReferral } = useShareReferral();
   const username = email ? email.split('@')[0] : 'User';
   const initial = username.charAt(0).toUpperCase();
 
@@ -63,30 +65,7 @@ export function ReferralLinkCard({
                 <Button
                   onClick={async () => {
                      if (!referralLink) return;
-                     
-                     const shareTitle = 'Simplify Your Taxes with TaxTrack';
-                     const shareText = "Stop struggling with NRS deadlines! 🛡️ I use TaxTrack to automate my Personal Income Tax, VAT, and Withholding Tax effortlessly. It's the smartest way to stay compliant and save money in Nigeria. Sign up with my link:";
-                     
-                     // RUTHLESS FEEDBACK: Web Share API is not supported everywhere (e.g., Desktop Chrome/Firefox).
-                     // We MUST provide a fallback.
-                     if (navigator.share) {
-                       try {
-                         await navigator.share({
-                           title: shareTitle,
-                           text: shareText,
-                           url: referralLink,
-                         });
-                       } catch (err) {
-                          // User cancelled or share failed
-                          console.log('Share cancelled', err);
-                       }
-                     } else {
-                        // FALLBACK: Copy to clipboard if sharing isn't native
-                        // We include the message here as requested "add a message to the link"
-                        const fullMessage = `${shareTitle}\n\n${shareText} ${referralLink}`;
-                        navigator.clipboard.writeText(fullMessage);
-                        toast.success("Message & Link copied!", { description: "Paste it on WhatsApp, Twitter, or Email." });
-                     }
+                     await shareReferral(referralLink, "referral_card");
                   }}
                   variant={ButtonVariant.Outline}
                   size={ButtonSize.Md}

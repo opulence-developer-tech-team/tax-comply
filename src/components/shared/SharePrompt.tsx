@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/Button";
 import { ShareModal } from "./ShareModal";
 import { SharePromptPosition, ButtonVariant, ButtonSize } from "@/lib/utils/client-enums";
 import { toast } from "sonner";
+import { REFERRAL_CONFIG } from "@/lib/config/referral";
+import { useShareReferral } from "@/hooks/useShareReferral";
 
 interface SharePromptProps {
   /** Whether to show the prompt */
@@ -49,6 +51,7 @@ export function SharePrompt({
 }: SharePromptProps) {
   const [mounted, setMounted] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const { shareReferral } = useShareReferral();
 
   useEffect(() => {
     setMounted(true);
@@ -78,53 +81,7 @@ export function SharePrompt({
    */
   const handleShare = async () => {
     const shareUrl = getShareUrl();
-    const shareTitle = 'Simplify Your Taxes with TaxComply NG';
-    const shareText = "Stop struggling with NRS deadlines! 🛡️ I use TaxComply NG to automate my Personal Income Tax, VAT, and Withholding Tax effortlessly. It's the smartest way to stay compliant and save money in Nigeria. Sign up with my link:";
-
-    // Track share event (optional)
-    if (typeof window !== "undefined" && (window as any).gtag) {
-      (window as any).gtag("event", "share_clicked", {
-        method: "share_prompt",
-        content_type: "referral",
-      });
-    }
-
-    // Try native share API first (mobile & modern desktop)
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: shareTitle,
-          text: shareText,
-          url: shareUrl,
-        });
-        // Track successful native share
-        if (typeof window !== "undefined" && (window as any).gtag) {
-          (window as any).gtag("event", "share_success", {
-            method: "native",
-          });
-        }
-        return;
-      } catch (error: any) {
-        // User cancelled or error occurred
-        if (error.name !== "AbortError") {
-          console.error("Error sharing:", error);
-        }
-        // Fall through logic not needed here if native dialog was closed
-      }
-    } else {
-        // Fallback: Copy to clipboard if sharing isn't native
-        const fullMessage = `${shareTitle}\n\n${shareText} ${shareUrl}`;
-        await navigator.clipboard.writeText(fullMessage);
-        
-        // Show simplified toast since we don't have the toast implementation imported yet.
-        // But ReferralLinkCard uses 'sonner', so we should probably import it or just alert/console
-        // The user says "Should be same", so I should import toast from sonner.
-        // Let's assume toast is available via import { toast } from "sonner";
-        toast.success("Message & Link copied!", { description: "Paste it on WhatsApp, Twitter, or Email." });
-    }
-    
-    // We do NOT show the custom modal anymore based on "Should be same as ReferralLinkCard" request which uses copy fallback.
-    // setShowShareModal(true); 
+    await shareReferral(shareUrl, "share_prompt");
   };
 
   /**
@@ -230,7 +187,7 @@ export function SharePrompt({
                       id="share-prompt-description"
                       className="text-sm text-slate-600 leading-relaxed"
                     >
-                      Share TaxComply NG and help others simplify their tax compliance journey.
+                      Share TaxComply NG and earn {REFERRAL_CONFIG.COMMISSION_PERCENTAGE * 100}% from the amount the user subscribes with.
                     </p>
                   </div>
                 </div>
