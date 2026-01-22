@@ -165,11 +165,9 @@ const invoiceSchema = new Schema<IInvoice>(
 );
 
 // Custom validator to ensure either companyId or businessId is present
-invoiceSchema.pre("validate", function (this: any, next: any) {
+invoiceSchema.pre("validate", function (this: any) {
   if (!this.companyId && !this.businessId) {
-    next(new Error("Invoice must belong to either a Company or a Business"));
-  } else {
-    next();
+    throw new Error("Invoice must belong to either a Company or a Business");
   }
 });
 
